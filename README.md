@@ -7,14 +7,14 @@ Application helps with caluculating calories this app was inspired by Fitatu i h
 
 ## Getting Started
 
-## Requirement Software
+# Requirement Software
 
 - Working flutter enviroment and dart compiler [Flutter/Dart](https://docs.flutter.dev/get-started/codelab)
 - Android Studio [Android studio](https://developer.android.com/studio)
 - Python interpreter, pip, flask. To work with python flask i used Anaconda environment [Anaconda](https://www.anaconda.com/download)
 - Sqllite Browser if you want to get into database
  
-## Before lunching
+# Before lunching
 
 If you got to this point it's still not end you have to
 
@@ -41,5 +41,5 @@ I've made .bat file that will run this application, but you can do it on your ow
 
 If you're using VSCode i prepared two lunch options first one lunch Flutter app second one lunch Python flask api server
 
-## Documentation 
+# Documentation 
 to do
