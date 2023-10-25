@@ -1,6 +1,8 @@
 ## Fitness App
 
 Project on my studies that was really tring and required lots of my strengths to end it.
+
+
 Application helps with caluculating calories this app was inspired by Fitatu i havn't found better name than Fitness App so it will stay like this.
 
 ## Getting Started
@@ -35,6 +37,8 @@ I tried to select files that have to be here but this is my first flutter projec
 # Lunch
 
 I've made .bat file that will run this application, but you can do it on your own.
+
+
 If you're using VSCode i prepared two lunch options first one lunch Flutter app second one lunch Python flask api server
 
 ## Documentation 
