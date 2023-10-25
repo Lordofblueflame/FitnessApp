@@ -1,20 +1,44 @@
-name: Dart
+name: Dart Analysis
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          dart-sdk-version: stable
+
+      - name: Install dependencies
+        run: flutter pub get
 
       - name: Analyze project source
         run: dart analyze
 
+      - name: Upload Dart analysis results
+        uses: actions/upload-artifact@v2
+        with:
+          name: analysis-results
+          path: analysis_results
+
+  download-analysis:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Dart analysis results
+        uses: actions/download-artifact@v2
+        with:
+          name: analysis-results
