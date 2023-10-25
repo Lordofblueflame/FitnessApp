@@ -22,10 +22,13 @@ If you got to this point it's still not end you have to
 
 And because of some problems with virtual machine you may need to change api adress to your own
 
+
 On cmd run command 'ipconfig -all' and search for 'IPv4 Address'
 ![image](https://github.com/Lordofblueflame/testapp/assets/68779635/607aaf09-0fab-4ba6-95ab-12acb790cd15)
 
+
 It should be something similiar to this.
+
 
 I tried to select files that have to be here but this is my first flutter project and python project so there may be some changes regarding this.
 
