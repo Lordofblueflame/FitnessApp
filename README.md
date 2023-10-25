@@ -7,7 +7,10 @@ Application helps with caluculating calories this app was inspired by Fitatu i h
 
 # Getting Started
 
-Before we even start we need to make sure few things are working correctly, follow pages i link(remember always check correct site adress don't trust anyone)
+Before we even start we need to make sure few things are working correctly, follow pages i linked and step by step download and setup your environment
+
+
+(remember always check correct site adress don't trust anyone)
 
 # Requirement Software
 
