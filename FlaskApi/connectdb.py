@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 
-dbpath = r"D:\Repo\testapp\SQLiteDatabase\FitnessAppDatabase.db"
+dbpath = r"D:\Repo\FitnessApp\SQLiteDatabase\FitnessAppDatabase.db"
 default_username = "Kamiloso515"
 default_password = "123456"
 defaulut_email = "Cepkamil@gmail.com"

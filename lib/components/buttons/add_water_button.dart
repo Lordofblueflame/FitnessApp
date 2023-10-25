@@ -27,28 +27,28 @@ class WaterButtonState extends State<WaterButton> {
     Timer(const Duration(milliseconds: 250), () {
       setState(() {
         if (isEmpty) {
-          source = "testapp/lib/assets/images/half.png";
+          source = "FitnessApp/lib/assets/images/half.png";
         } else {
-          source = "testapp/lib/assets/images/overhalf.png";
+          source = "FitnessApp/lib/assets/images/overhalf.png";
         }
       });
     });
     Timer(const Duration(milliseconds: 250), () {
       setState(() {
         if (isEmpty) {
-          source = "testapp/lib/assets/images/overhalf.png";
+          source = "FitnessApp/lib/assets/images/overhalf.png";
         } else {
-          source = "testapp/lib/assets/images/half.png";
+          source = "FitnessApp/lib/assets/images/half.png";
         }
       });
     });
     Timer(const Duration(milliseconds: 250), () {
       setState(() {
         if (isEmpty) {
-          source = "testapp/lib/assets/images/full.png";
+          source = "FitnessApp/lib/assets/images/full.png";
           isEmpty = false;
         } else {
-          source = "testapp/lib/assets/images/empty.png";
+          source = "FitnessApp/lib/assets/images/empty.png";
           isEmpty = true;
         }
       });

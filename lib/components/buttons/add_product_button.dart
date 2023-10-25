@@ -35,7 +35,7 @@ class AddProductButton extends StatelessWidget {
         ),
         child: Center(
           child: Image.asset(
-            'testapp/lib/assets/images/Plus.png',
+            'FitnessApp/lib/assets/images/Plus.png',
             height: 30,
             width: 30,
           ),

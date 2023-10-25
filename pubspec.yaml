@@ -35,12 +35,12 @@ dependencies:
   http: ^1.1.0
 
 assets:
-  - testapp/lib/assets/images/empty.png
-  - testapp/lib/assets/images/full.png
-  - testapp/lib/assets/images/Glogo.png
-  - testapp/lib/assets/images/half.png
-  - testapp/lib/assets/images/overhalf.png
-  - testapp/lib/assets/images/Plus.png
+  - FitnessApp/lib/assets/images/empty.png
+  - FitnessApp/lib/assets/images/full.png
+  - FitnessApp/lib/assets/images/Glogo.png
+  - FitnessApp/lib/assets/images/half.png
+  - FitnessApp/lib/assets/images/overhalf.png
+  - FitnessApp/lib/assets/images/Plus.png
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
