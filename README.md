@@ -1,20 +1,20 @@
-## Fitness App
+# Fitness App
 
 Project on my studies that was really tring and required lots of my strengths to end it.
 
 
 Application helps with caluculating calories this app was inspired by Fitatu i havn't found better name than Fitness App so it will stay like this.
 
-## Getting Started
+# Getting Started
 
-# Requirement Software
+## Requirement Software
 
 - Working flutter enviroment and dart compiler [Flutter/Dart](https://docs.flutter.dev/get-started/codelab)
 - Android Studio [Android studio](https://developer.android.com/studio)
 - Python interpreter, pip, flask. To work with python flask i used Anaconda environment [Anaconda](https://www.anaconda.com/download)
 - Sqllite Browser if you want to get into database
  
-# Before lunching
+## Before lunching
 
 If you got to this point it's still not end you have to
 
