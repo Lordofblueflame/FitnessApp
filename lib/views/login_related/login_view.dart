@@ -170,7 +170,7 @@ class LoginView extends StatelessWidget {
               ),
 
                     //google
-              const ImageSquareTitle(imagePath: "FitnessApp/lib/assets/images/Glogo.png"),
+              const ImageSquareTitle(imagePath: "lib/assets/images/Glogo.png"),
                     //not a member register now!
 
               const SizedBox(

@@ -34,13 +34,6 @@ dependencies:
   quiver: ^3.2.1
   http: ^1.1.0
 
-assets:
-  - FitnessApp/lib/assets/images/empty.png
-  - FitnessApp/lib/assets/images/full.png
-  - FitnessApp/lib/assets/images/Glogo.png
-  - FitnessApp/lib/assets/images/half.png
-  - FitnessApp/lib/assets/images/overhalf.png
-  - FitnessApp/lib/assets/images/Plus.png
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -62,7 +55,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - lib/assets/images/empty.png
+    - lib/assets/images/full.png
+    - lib/assets/images/Glogo.png
+    - lib/assets/images/half.png
+    - lib/assets/images/overhalf.png
+    - lib/assets/images/Plus.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
