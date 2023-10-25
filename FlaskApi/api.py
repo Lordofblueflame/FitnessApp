@@ -21,19 +21,54 @@ api.authorizations = {
 }
 
 login_password_model = api.model('LoginPasswordModel', {
-    'username': fields.String(description='Username or login', example='test'),
-    'password': fields.String(description='User password', example='test'),
+    'username': fields.String(description = 'Username or login', example = 'test'),
+    'password': fields.String(description = 'User password', example = 'test'),
+})
+user_model = api.model('UserModel', {
+    'user_id': fields.Integer(description=  "user id", example = 1),
+    'login_password': login_password_model,
+    'email': fields.String(description = 'email of the user', example = 'test'),
+    'weight': fields.Integer(description = 'Weight of the user', example = 10),
+    'height': fields.Integer(description = 'Height of the user', example = 15)
+})
+
+meal_model = api.model('Meal', {
+    'meal_id': fields.Float(description = 'meal id', example = 1),
+    'meal_name': fields.Float(description = 'meal name', example = "Breakfast")
 })
 
 product_model = api.model('Product', {
-    'product_name': fields.String(description='Name of the product', required=True),
-    'calories': fields.Float(description='Calories in the product', required=True),
-    'proteins': fields.Float(description='Proteins in the product', required=True),
-    'fats': fields.Float(description='Fats in the product', required=True),
-    'carbons': fields.Float(description='Carbons in the product', required=True)
+    'product_id': fields.Integer(description = "Product id", example = 1),
+    'product_name': fields.String(description = 'Name of the product', example = 'mleko'),
+    'calories': fields.Float(description = 'Calories in the product', example = '150'),
+    'proteins': fields.Float(description = 'Proteins in the product', example = '5'),
+    'fats': fields.Float(description = 'Fats in the product', example = '7'),
+    'carbons': fields.Float(description = 'Carbons in the product', example = 0.5)
 })
 
+product_in_meal_model = api.model('ProductInMeal', {
+    'products_in_meal': fields.Integer(description ='Product in meal description', example = 1),
+    'meal_id': fields.Integer(description ='Meal ID', example = 1),
+    'product_id': fields.Integer(description ='Product ID', example = 5),
+})
+
+user_day_entries_model = api.model('UserDayEntries', {
+    'entry id': fields.Integer(description = 'entry id', example = 4),
+    'user id': fields.Integer(description = 'user id', example = 7),
+    'date': fields.String(description = 'date entry was made', example='2023-07-01'),
+    'water': fields.Integer(description = 'Amount of water user consumed', example = 0),
+    'workout': fields.Integer(description='Meal ID', example = 0),
+    'products_in_meal': fields.Integer(description ='Product in meal id', example = 3),
+})
+
+# those models represent single data record from database you can use it for testing Api
+
 user_ns = api.namespace('user', description='User operations')
+product_ns = api.namespace('product', description='Product operations')
+meal_ns = api.namespace('meal', description='Meal operations')
+productinmeal_ns = api.namespace('productinmeal', description='Products in Meal operations')
+dayentries_ns = api.namespace('dayentries', description='Day Entries operations')
+
 @user_ns.route('/register')
 class UserRegister(Resource):
     @api.doc(description='Create a new user')
@@ -128,7 +163,7 @@ class ChangePassword(Resource):
         else:
             return {'message': 'Database connection error.'}, 500
 
-product_ns = api.namespace('product', description='Product operations')
+
 @product_ns.route('/addproduct')
 class AddProduct(Resource):
     @api.doc(description='Add a new product')
@@ -154,7 +189,7 @@ class SearchProductByName(Resource):
         retval = product.search_products_by_name(data)
         return retval
 
-meal_ns = api.namespace('meal', description='Meal operations')
+
 @meal_ns.route('/addmeal')
 class AddMeal(Resource):
     @api.doc(description='Add a new meal')
@@ -195,16 +230,6 @@ class GetMeals(Resource):
         retval = meal.get_meals()
         return retval
     
-
-productinmeal_ns = api.namespace('productinmeal', description='Products in Meal operations')
-product_in_meal_model = productinmeal_ns.model('ProductInMeal', {
-    'meal_id': fields.Integer(description='Meal ID', required=True),
-    'product_id': fields.Integer(description='Product ID', required=True),
-    'products_in_meal': fields.String(description='Product in meal description')
-})
-
-product_in_meal_data = []
-
 @productinmeal_ns.route('/addproductinmeal')
 class AddProductInMeal(Resource):
     @productinmeal_ns.doc(description='Add a product to a meal')
@@ -236,7 +261,6 @@ class GetProductInMeal(Resource):
         retval = productsinmeal.get_product_in_meal(data)
         return retval
 
-dayentries_ns = api.namespace('dayentries', description='Day Entries operations')
 day_entries_model = dayentries_ns.model('DayEntries', {
     'date': fields.String(description='Date in YYYY-MM-DD format', required=True),
     'user_id': fields.Integer(description='User ID', required=True),
@@ -244,7 +268,6 @@ day_entries_model = dayentries_ns.model('DayEntries', {
     'workout': fields.String(description='Workout description'),
     'product_in_meal': fields.String(description='Product in meal description')
 })
-day_entries_data = []
 
 @dayentries_ns.route('/getdayentries')
 class GetDayEntries(Resource):
