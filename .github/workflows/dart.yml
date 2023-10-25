@@ -14,9 +14,6 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
-        
-      - name: Build flutter app
-        run: Flutter build apk
 
       - name: Analyze project source
         run: dart analyze
