@@ -53,53 +53,32 @@ def login(data):
     conn.close()
     return make_response(jsonify({"message":"username or password is wrong"}), 400)
 
-def recover_password(data):
+def recover_password(email):
     conn = connectdb.create_connection()
     cur = conn.cursor()
 
     q1 = "SELECT '1' FROM USER WHERE email = ?"
-    cur.execute(q1,(data['email'],))
-    select = cur.fetchone()[0]
+    cur.execute(q1, (email,))
+    select = cur.fetchone()
 
-    if(select == '1'):
-        cur = conn.cursor()
+    if select:
         q2 = "SELECT password FROM USER WHERE email = ?"
-        cur.execute(q2,(data['email'],))
-
+        cur.execute(q2, (email,))
         selected_pass = cur.fetchone()[0]
         conn.close()
-        return make_response(jsonify({"recoveredPassword" : selected_pass}), 200)
+        return selected_pass
     else:
         conn.close()
-        return make_response(jsonify({"message":"email not found"}), 400)
+        return None
 
-def find_by_username(username):
-    conn = connectdb.create_connection()
-    cur = conn.cursor()
-    q1 = "SELECT * FROM User WHERE username = ?"
-    result = cur.execute(q1,(username,))
-    row = result.fetchone()
-    #if row:
-        #user = User(*row)
-   # else:
-    #    user = None
-    #return user
 
-def find_by_id(id):
-    conn = connectdb.create_connection()
-    cur = conn.cursor()
-    q1 = "SELECT * FROM id WHERE username = ?"
-    result = cur.execute(q1,(id,))
-    row = result.fetchone()
-    #if row:
-    #    user = User(*row)
-    #else:
-    #    user = None
-    #return user 
     
-def get_user_info(username, password):
+def get_user_info(data):
     conn = connectdb.create_connection(connectdb.dbpath)
     cur = conn.cursor()
+
+    username = data.get('username')
+    password = data.get('password')
 
     q1 = "SELECT user_id,username,email,weight,height FROM User WHERE username = ? AND password = ?"
     cur.execute(q1, (username,password,))
