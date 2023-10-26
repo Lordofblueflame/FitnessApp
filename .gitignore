@@ -142,3 +142,4 @@ windows/runner/utils.h
 windows/runner/win32_window.cpp
 windows/runner/win32_window.h
 windows/runner/resources/app_icon.ico
+.vscode/settings.json
