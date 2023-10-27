@@ -4,19 +4,6 @@ from flask import jsonify,make_response
 
 # helper api don't depends on it's own need dayentry to work
 
-def get_product_id_by_product_in_meal(data):
-    conn = connectdb.create_connection()
-    cur = conn.cursor()
-
-    q1 = "SELECT product_id FROM ProductsInMeal where products_in_meal = ?"
-    cur.execute(q1,(data))
-
-    db_output = cur.fetchone()
-
-    connectdb.commit_and_close(conn)  
-    json_output = jsonify({'product_id':db_output})
-    return make_response(json_output,200)
-
 def add_product_in_meal(data):
     conn = connectdb.create_connection()
     cur = conn.cursor()
