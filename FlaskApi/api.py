@@ -5,7 +5,7 @@ import meal
 import productsinmeal
 import dayentries
 import connectdb
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, reqparse
 
 app = Flask(__name__)
 api = Api(app)
@@ -20,21 +20,37 @@ api.authorizations = {
     }
 }
 
-login_password_model = api.model('LoginPasswordModel', {
-    'username': fields.String(description = 'Username or login', example = 'test'),
-    'password': fields.String(description = 'User password', example = 'test'),
-})
-user_model = api.model('UserModel', {
-    'user_id': fields.Integer(description=  "user id", example = 1),
-    'login_password': login_password_model,
-    'email': fields.String(description = 'email of the user', example = 'test'),
-    'weight': fields.Integer(description = 'Weight of the user', example = 10),
-    'height': fields.Integer(description = 'Height of the user', example = 15)
+login_request_model = api.model('LoginRequestModel', {
+    'username': fields.String(required=True, description='Username or login'),
+    'password': fields.String(required=True, description='User password'),
 })
 
-meal_model = api.model('Meal', {
-    'meal_id': fields.Float(description = 'meal id', example = 1),
-    'meal_name': fields.Float(description = 'meal name', example = "Breakfast")
+create_user_request_model = api.model('CreateUserRequestModel', {
+    'username': fields.String(required=True, description='Username or login'),
+    'password': fields.String(required=True, description='User password'),
+    'email': fields.String(required=True, description='Email of the user'),
+    'weight': fields.Integer(required=True, description='Weight of the user'),
+    'height': fields.Integer(required=True, description='Height of the user'),
+})
+
+delete_user_request_model = api.model('DeleteUserRequestModel', {
+    'user_id': fields.Integer(required=True, description='User ID'),
+})
+
+recover_password_request_model = api.model('RecoverPasswordRequestModel', {
+    'email': fields.String(required=True, description='Email of the user'),
+})
+
+update_weight_height_request_model = api.model('UpdateWeightHeightRequestModel', {
+    'user_id': fields.Integer(required=True, description='User ID'),
+    'weight': fields.Float(required=True, description='Weight'),
+    'height': fields.Float(required=True, description='Height'),
+})
+
+change_password_request_model = api.model('ChangePasswordRequestModel', {
+    'user_id': fields.Integer(required=True, description='User ID'),
+    'current_password': fields.String(required=True, description='Current password'),
+    'new_password': fields.String(required=True, description='New password'),
 })
 
 product_model = api.model('Product', {
@@ -72,6 +88,7 @@ dayentries_ns = api.namespace('dayentries', description='Day Entries operations'
 @user_ns.route('/register')
 class UserRegister(Resource):
     @api.doc(description='Create a new user')
+    @api.expect(create_user_request_model, validate=True)  # Use the create_user_request_model
     def post(self):
         data = request.get_json()
         retval = user.create_user(data)
@@ -80,6 +97,7 @@ class UserRegister(Resource):
 @user_ns.route('/deleteuser')
 class UserDelete(Resource):
     @api.doc(description='Delete a user by user_id')
+    @api.expect(delete_user_request_model, validate=True)  # Use the delete_user_request_model
     def delete(self):
         data = request.get_json()
         retval = user.delete_user(data)
@@ -88,39 +106,39 @@ class UserDelete(Resource):
 @user_ns.route('/login')
 class UserLogin(Resource):
     @api.doc(description='User login')
-    @api.expect(login_password_model, validate=True)
+    @api.expect(login_request_model, validate=True)  # Use the login_request_model
     def post(self):
         data = request.get_json()
         retval = user.login(data)
         return retval
+    
+email_parser = reqparse.RequestParser()
+email_parser.add_argument('email', type=str, required=True, help='Email of the user')
 
 @user_ns.route('/recoverpassword')
 class UserRecoverPassword(Resource):
     @api.doc(description='Recover user password by email')
+    @api.expect(email_parser)
     def get(self):
-        data = request.get_json()
-        retval = user.recover_password(data)
-        return retval
+        email = request.args.get('email')
+        retval = user.recover_password(email)
+        return jsonify(retval)
+
 
 @user_ns.route('/getuserinfo', methods=['POST'])
 class UserGetUserInfo(Resource):
     @api.doc(description='Get user information by login and password')
-    @api.expect(login_password_model, validate=True)
+    @api.expect(login_request_model, validate=True)  
     def post(self):
         data = request.get_json() 
-        login = data.get('username')
-        password = data.get('password')
-        retval = user.get_user_info(login, password)
+        retval = user.get_user_info(data)
         print(retval)
         return jsonify(retval) 
 
 @user_ns.route('/update_weight_height')
 class UpdateWeightHeight(Resource):
     @api.doc(description='Update user weight and height')
-    @api.expect(api.parser().add_argument('user_id', type=int, help='User ID', required=True)
-                            .add_argument('weight', type=float, help='Weight', required=True)
-                            .add_argument('height', type=float, help='Height', required=True),
-                validate=True)
+    @api.expect(update_weight_height_request_model, validate=True)  # Use the update_weight_height_request_model
     def post(self):
         conn = connectdb.create_connection()
         user_id = api.payload.get('user_id')
@@ -139,10 +157,7 @@ class UpdateWeightHeight(Resource):
 @user_ns.route('/change_password')
 class ChangePassword(Resource):
     @api.doc(description='Change user password')
-    @api.expect(api.parser().add_argument('user_id', type=int, help='User ID', required=True)
-                            .add_argument('current_password', type=str, help='Current password', required=True)
-                            .add_argument('new_password', type=str, help='New password', required=True),
-                validate=True)
+    @api.expect(change_password_request_model, validate=True)  # Use the change_password_request_model
     def post(self):
         user_id = api.payload.get('user_id')
         current_password = api.payload.get('current_password')
