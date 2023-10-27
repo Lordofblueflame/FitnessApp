@@ -31,7 +31,7 @@ And because of some problems with virtual machine you may need to change api adr
 
 
 On cmd run command 'ipconfig -all' and search for 'IPv4 Address'
-![image](https://github.com/Lordofblueflame/testapp/assets/68779635/607aaf09-0fab-4ba6-95ab-12acb790cd15)
+![image](https://github.com/Lordofblueflame/FitnessApp/assets/68779635/ce69b9b3-1405-4b0c-bf72-7b2b1532f000)
 
 
 It should be something similiar to this.
