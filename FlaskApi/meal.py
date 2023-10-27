@@ -77,4 +77,3 @@ def get_meals():
     json_output = json.dumps(meals)
     connectdb.commit_and_close(conn)
     return make_response(jsonify(meals), 200)
-
