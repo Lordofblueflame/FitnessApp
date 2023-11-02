@@ -54,7 +54,6 @@ class LoginAppState extends State<LoginApp> {
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/mainView') {
-          // Przekierowanie do MyApp tylko jeśli użytkownik jest zalogowany
           if (isLogged) {
 
             return MaterialPageRoute(builder: (context) => MyApp(user: user, mealList: mealList, date: currentDay, initialList: initialList, productsinmeal: productsinmeal));

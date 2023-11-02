@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '../../api/day_entries_api.dart';
 import '../../api/meal_api.dart';
 import '../../api/products_in_meal_api.dart';
@@ -21,8 +23,8 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(context);
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       backgroundColor: Colors.lightGreen[300],
       body: SafeArea(
         child: Center(
@@ -90,47 +92,50 @@ class LoginView extends StatelessWidget {
               
               //  sign in button
               UserControlButton(
-                onTap: () async {
-                  bool retval = await login(usernameController.text,passwordController.text);
-                  if(retval)
-                  {         
-                    try {
-                      print(retval);
-                      List<Meal> mealList = await fetchMeals();                   
-                      User user = await getUserInfo(usernameController.text,passwordController.text);
-                      List<UserDayEntry> initialList = await getUserDayEntries(user.userId);
-                      List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(initialList); 
-                      isLoggedCallback!(true,user,mealList,initialList,productsInMeal);
-                      Map<String, dynamic> arguments = {
-                        'User': User,
-                        'mealList': mealList,
-                        'initialList': initialList,
-                        'productsInMeal': productsInMeal
-                      };
-                      Navigator.pushReplacementNamed(context, '/mainView', arguments: arguments);
-                    } catch(e) {
-                      print('Błąd podczas pobierania informacji o użytkowniku: $e');
-                      showDialog(                     
-                        context: context, 
-                        builder: (BuildContext context) => const AlertDialog(
-                          title: Text('Connection error'),
-                          content: Text("Something went wrong with connection please try again in some time"),
-                        )
-                      );
-                    }
-                  }
-                  else
-                  {
+              onTap: () async {
+                bool retval = await login(usernameController.text, passwordController.text);
+                if (retval) {         
+                  try {
+                    List<Meal> mealList = await getMeals();                   
+                    User user = await getUserInfo(usernameController.text, passwordController.text);
+                    
+                    String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
+
+                    List<UserDayEntry> initialList = await getCurrentDayEntries(currentDate, user.userId);
+                    
+                    List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(initialList); 
+                    
+                    isLoggedCallback!(true, user, mealList, initialList, productsInMeal);
+                    
+                    Map<String, dynamic> arguments = {
+                      'User': User,
+                      'mealList': mealList,
+                      'initialList': initialList,
+                      'productsInMeal': productsInMeal
+                    };
+                    
+                    Navigator.pushReplacementNamed(context, '/mainView', arguments: arguments);
+                  } catch(e) {
+                    print('Error while handling user data: $e');
                     showDialog(                     
                       context: context, 
                       builder: (BuildContext context) => const AlertDialog(
-                        title: Text('Cannot login'),
-                        content: Text("You've provided wrong username or password"),
+                        title: Text('Connection error'),
+                        content: Text("Something went wrong with the connection. Please try again later."),
                       )
                     );
-                    return retval;
                   }
-                },
+                } else {
+                  showDialog(                     
+                    context: context, 
+                    builder: (BuildContext context) => const AlertDialog(
+                      title: Text('Cannot login'),
+                      content: Text("You've provided the wrong username or password"),
+                    )
+                  );
+                  return retval;
+                }
+              },
                 buttonText: 'Sign in'
               ),
               

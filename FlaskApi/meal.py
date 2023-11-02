@@ -9,7 +9,7 @@ def add_new_meal(data):
     q1 = "INSERT INTO Meal(meal_name) VALUES(?)"
     cur.execute(q1, (data['meal_name'],))
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
     json_output = jsonify({"message": "meal created successfully"})
 
     return make_response(json_output, 200)
@@ -22,7 +22,7 @@ def get_meal_name(meal_id):
     cur.execute(q1, (meal_id,))
     select = cur.fetchone()
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
 
     if select:
         meal_name = select[0]
@@ -38,7 +38,7 @@ def get_meal_by_id(meal_id):
     cur.execute(q1, (meal_id,))
     select = cur.fetchone()
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
 
     if select:
         meal_data = {
@@ -57,7 +57,7 @@ def get_meal_id_by_name(meal_name):
     cur.execute(q1)
     select = cur.fetchone()
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
 
     if select:
         meal_id = select[0]
@@ -75,5 +75,5 @@ def get_meals():
     meals = [dict(zip([column[0] for column in cur.description], row)) for row in result]
 
     json_output = json.dumps(meals)
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
     return make_response(jsonify(meals), 200)
