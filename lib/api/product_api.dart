@@ -1,38 +1,47 @@
-// ignore: unused_import
-import '../data_models/meal.dart';
 import '../data_models/productsinmeal.dart';
-import 'package:flutter/foundation.dart'; 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../data_models/product.dart';
 import 'common_api.dart';
+import '../log/debug_helper.dart';
 
 Future<Product> getProductById(int id) async {
-  final url = '$adres/product/getproduct?product_id=$id'; // Zmień adres na swój
+  DebugHelper.printFunctionName();
+
+  final url = '$address/product/getproduct?product_id=$id';
+  final headers = {'Content-Type': 'application/json'};
 
   try {
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
-           final jsonResponse = jsonDecode(response.body);
-    if (jsonResponse is List && jsonResponse.isNotEmpty) {
-      final productJson = jsonResponse.first;
-      final product = Product.fromJson(productJson);
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      final Product product = Product(
+        product_id: responseData['product_id'],
+        productName: responseData['product_name'],
+        calories: responseData['calories'],
+        proteins: responseData['proteins'].toDouble(),
+        fats: responseData['fats'].toDouble(),
+        carbs: responseData['carbons'].toDouble(),
+      );
+
       return product;
-    } 
     } else {
-      throw Exception('Błąd podczas pobierania produktu: ${response.statusCode}');
+      throw Exception('Error fetching product: ${response.statusCode}');
     }
   } catch (e) {
     if (kDebugMode) {
-      print('Wystąpił błąd: $e');
+      print('An error occurred: $e');
     }
-    throw Exception('Wystąpił błąd podczas komunikacji z serwerem');
+    throw Exception('An error occurred while communicating with the server');
   }
-   throw Exception('Wystąpił błąd podczas komunikacji z serwerem');
 }
 
 Future<List<Product>> getListOfProductsFromProductsInMeal(List<ProductsInMeal> productsinmeal) async {
+  DebugHelper.printFunctionName();
+
   final List<Product> productList = [];
 
   for (final entry in productsinmeal) {
@@ -43,18 +52,19 @@ Future<List<Product>> getListOfProductsFromProductsInMeal(List<ProductsInMeal> p
 
   return productList;
 }
-//szukanie produktów podobnych do wpisanego GET
-// ignore: non_constant_identifier_names
+
 Future<List<Product>> searchForProducts(String productName) async {
-  final url = '$adres/product/searchproductbyname?product_name=$productName'; // Zmień adres na swój
+  DebugHelper.printFunctionName();
+
+  final url = '$address/product/getproductbyname?product_name=$productName';
   final headers = {'Content-Type': 'application/json'};
 
-  print(productName);
   try {
     final response = await http.get(Uri.parse(url), headers: headers);
 
     if (response.statusCode == 200) {
       final List<dynamic> responseData = json.decode(response.body);
+
       final List<Product> productList = responseData.map((item) {
         final Map<String, dynamic> jsonMap = item;
         return Product(
@@ -66,21 +76,23 @@ Future<List<Product>> searchForProducts(String productName) async {
           carbs: jsonMap['carbons'].toDouble(),
         );
       }).toList();
+
       return productList;
     } else {
-      throw Exception('Błąd podczas pobierania produktów');
+      throw Exception('Error fetching products');
     }
   } catch (e) {
     if (kDebugMode) {
-      print('Wystąpił błąd: $e');
+      print('An error occurred: $e');
     }
-    throw Exception('Wystąpił błąd: $e');
+    throw Exception('An error occurred: $e');
   }
 }
 
-//dodaj nowy produkt POST
-Future<void> add_new_product(String productName, int calories, double protiens, double fats, double carbons) async {
-  const url = '$adres/createuser'; // Zmień adres na swój
+Future<void> addNewProduct(String productName, int calories, double protiens, double fats, double carbons) async {
+  DebugHelper.printFunctionName();
+
+  const url = '$address/createuser'; // Change the address to your desired endpoint
   final headers = {'Content-Type': 'application/json'};
   final data = {
     'product_name': productName,
@@ -94,40 +106,30 @@ Future<void> add_new_product(String productName, int calories, double protiens, 
   try {
     final response = await http.post(Uri.parse(url), headers: headers, body: jsonData);
 
-    if (response.statusCode == 200) {
-      // ignore: unused_local_variable
-      final responseData = json.decode(response.body);
-    }
-  }
-  catch (e) {
+    if (response.statusCode == 200) {}
+  } catch (e) {
     if (kDebugMode) {
-      print('Wystąpił błąd: $e');
+      print('An error occurred: $e');
     }
   }
 }
 
-//dodaj nowy produkt GET
-Future<void> show_all_products() async {
-  const url = '$adres/createuser'; // Zmień adres na swój
-  final headers = {'Content-Type': 'application/json'};
-  final data = {
+Future<dynamic> showAllProducts() async {
+  DebugHelper.printFunctionName();
 
-  };
+  const url = '$address/createuser';
+  final headers = {'Content-Type': 'application/json'};
+  final data = {};
+
   final jsonData = json.encode(data);
 
   try {
     final response = await http.post(Uri.parse(url), headers: headers, body: jsonData);
 
-    if (response.statusCode == 200) {
-      // ignore: unused_local_variable
-      final responseData = json.decode(response.body);
-    }
-  }
-  catch (e) {
+    if (response.statusCode == 200) {}
+  } catch (e) {
     if (kDebugMode) {
-      print('Wystąpił błąd: $e');
+      print('An error occurred: $e');
     }
   }
 }
-
-

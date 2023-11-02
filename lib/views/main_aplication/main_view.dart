@@ -44,6 +44,7 @@ class MainViewState extends State<MainView> {
   void initState() {
     super.initState();
     initializeData();
+    updateData();
   }
 
   @override
@@ -51,22 +52,16 @@ class MainViewState extends State<MainView> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialDate != oldWidget.initialDate) {
       updateData();
-
     }
   }
 
-  Future<void> _updateInitialList() async {
-    List<UserDayEntry> updatedInitialList = await getUserDayEntries(widget.user.userId);
+  Future<void> _updateInitialListAndProductsInMeal() async {
+    String date = DateFormat('yyyy-MM-dd').format(widget.initialDate).toString();
+    List<UserDayEntry> updatedInitialList = await getCurrentDayEntries(date, widget.user.userId);
+    List<ProductsInMeal> updatedProductsInMeal = await getProductInMealFromDayEntries(updatedInitialList);
 
     setState(() {
       widget.initialList = updatedInitialList;
-    });
-  }
-
-  Future<void> _updateProductsInMeal() async {
-  List<ProductsInMeal> updatedProductsInMeal = await getProductInMealFromDayEntries(widget.initialList);
-
-    setState(() {
       widget.productsinmeal = updatedProductsInMeal;
     });
   }
@@ -95,19 +90,20 @@ class MainViewState extends State<MainView> {
     updateData();
   }
 
-  void updateData() async {
+Future<void> updateData() async {
     todayProductsInMeal.clear();
-    await _updateInitialList();
-    await _updateProductsInMeal();
     MacroData totalFromProduct = MacroData(kcal: 0, proteins: 0, fats: 0, carbs: 0);
+
     final userDayEntriesForDate = widget.initialList.where((entry) {
       String foramtDate = DateFormat('yyyy-MM-dd').format(widget.initialDate);
       return entry.date == foramtDate;
-    });
-    
+    }).toList();
+
+    await _updateInitialListAndProductsInMeal();
+
     for (final userDayEntry in userDayEntriesForDate) {
       final matchingProductsInMeal = widget.productsinmeal.where((productInMeal) =>
-      productInMeal.productsInMeal == userDayEntry.productInMeal);
+          productInMeal.productsInMeal == userDayEntry.productInMeal);
 
       if (matchingProductsInMeal.isNotEmpty) {
         for (final matchingProductInMeal in matchingProductsInMeal) {
@@ -129,45 +125,64 @@ class MainViewState extends State<MainView> {
     });
   }
 
+
   double calculateBMI(int weight, int height) {
     double bmi = weight / (height * height);
     return bmi;
   }
 
-  void _handleDateSelected(DateTime selectedDate) {
-    setState(() {
-      widget.initialDate = selectedDate;
-      updateData();
-    });
-  }
+void _handleDateSelected(DateTime selectedDate) async {
+  print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! date was changed here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  widget.initialDate = selectedDate;
 
-  @override
-  Widget build(BuildContext context) {
-    
-    return Scaffold(
-      backgroundColor: Colors.green[700],
-      appBar: AppBar(
-        flexibleSpace: const HeaderComponent(),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(0.0),
-          child: DayButton(restorationId: "1", initialDate: widget.initialDate, onDateSelected: _handleDateSelected),
+  // Wait for the updateData function to complete before updating the UI
+  await updateData();
+
+  setState(() {
+    updateData();
+  });
+  
+}
+
+
+
+@override
+Widget build(BuildContext context) {
+  final updatedDate = widget.initialDate;
+
+  return Scaffold(
+    backgroundColor: Colors.green[700],
+    appBar: AppBar(
+      flexibleSpace: const HeaderComponent(),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(0.0),
+        child: DayButton(
+          restorationId: "1",
+          initialDate: updatedDate, 
+          onDateSelected: _handleDateSelected,
         ),
       ),
-      bottomSheet: KcalFooterWidget(
-        totalkcal: total.kcal,
-        neededkcal: needed.kcal,
-        totalprot: total.proteins,
-        neededprot: needed.proteins,
-        totalfats: total.fats,
-        neededfats: needed.fats,
-        totalcarbs: total.carbs,
-        neededcarbs: needed.carbs,
-      ),
-      body: ListView(
-        children: [
-          MealsListBuilder(meals: widget.mealList, date: widget.initialDate, user: widget.user, productsinmeal: todayProductsInMeal),
-        ],
-      ),
-    );
-  }
+    ),
+    bottomSheet: KcalFooterWidget(
+      totalkcal: total.kcal,
+      neededkcal: needed.kcal,
+      totalprot: total.proteins,
+      neededprot: needed.proteins,
+      totalfats: total.fats,
+      neededfats: needed.fats,
+      totalcarbs: total.carbs,
+      neededcarbs: needed.carbs,
+    ),
+    body: ListView(
+      children: [
+        MealsListBuilder(
+          meals: widget.mealList,
+          date: updatedDate, // Use the updated date here
+          user: widget.user,
+          productsinmeal: todayProductsInMeal,
+        ),
+      ],
+    ),
+  );
+}
 }

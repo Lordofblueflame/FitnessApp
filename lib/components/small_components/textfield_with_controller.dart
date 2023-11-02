@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 //text field with controller - login, register, restore password
 
 class MyTextField extends StatelessWidget {
-  final controller;
+  final dynamic controller;
   final String hintText;
   final bool obscureText;
   

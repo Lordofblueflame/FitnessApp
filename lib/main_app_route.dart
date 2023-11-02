@@ -11,7 +11,7 @@ import 'views/userprofile/userprofile_view.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
-  final User user; // Dodano modyfikator 'final' przed 'User'
+  final User user;
   final List<Meal> mealList;
   final DateTime date;
   final List<UserDayEntry> initialList;
@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //init state api zeby pobrac User wszystkie i wypelnic 
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,

@@ -8,7 +8,7 @@ def create_user(data):
     q1 = "INSERT INTO USER(username,password,email) VALUES(?,?,?)"
     cur.execute(q1,(data['username'],data['password'],data['email']))
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
     return make_response(jsonify({"message": "User created successfully"}), 200)
 
 def delete_user(data):
@@ -20,17 +20,17 @@ def delete_user(data):
 
     select_result = cur.fetchone()[0]
     if not select_result:
-        conn.close()
+        
         return make_response(jsonify({"message": "User not found"}), 400)
 
-    if(select_result == '1'):
+    if(select_result == 1):
         q2 = "DELETE FROM user WHERE user_id = ?"
         cur.execute(q2, (data['user_id'],))
 
-        connectdb.commit_and_close(conn)
+        connectdb. commit(conn)
         return make_response(jsonify({"message": "User deleted successfully"}), 200)
 
-    conn.close()
+    
     return make_response(jsonify({"message": "Operation didn't work"}), 404)
        
 def login(data):
@@ -38,19 +38,18 @@ def login(data):
     cur = conn.cursor()
     
     q1 = "SELECT '1' FROM USER WHERE username = ? and password = ?"
-    print(data)
     cur.execute(q1,(data['username'],data['password'],))
     
     select = cur.fetchone()[0]
     if not select:
-        conn.close()
+        
         return make_response(jsonify({"message": "username or password is wrong"}), 400)
 
     if(select == '1'):
-        conn.close()
+        
         return make_response(jsonify({"message":"login accepted"}), 200)
 
-    conn.close()
+    
     return make_response(jsonify({"message":"username or password is wrong"}), 400)
 
 def recover_password(email):
@@ -65,10 +64,10 @@ def recover_password(email):
         q2 = "SELECT password FROM USER WHERE email = ?"
         cur.execute(q2, (email,))
         selected_pass = cur.fetchone()[0]
-        conn.close()
+        
         return selected_pass
     else:
-        conn.close()
+        
         return None
 
 

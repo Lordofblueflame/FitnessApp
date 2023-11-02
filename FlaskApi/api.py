@@ -6,8 +6,10 @@ import productsinmeal
 import dayentries
 import connectdb
 from flask_restx import Api, Resource, fields, reqparse
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 api.title = "Fitness App -"
 api.description = "TechStack: Flutter,Python,Flask,Anaconda,RestApi"
@@ -127,7 +129,6 @@ class UserGetUserInfo(Resource):
     def post(self):
         data = request.get_json() 
         retval = user.get_user_info(data)
-        print(retval)
         return jsonify(retval) 
 
 @user_ns.route('/update_weight_height')
@@ -144,7 +145,7 @@ class UpdateWeightHeight(Resource):
             cur = conn.cursor()
             cur.execute('UPDATE "User" SET weight=?, height=? WHERE user_id=?', (weight, height, user_id))
             conn.commit()
-            conn.close()
+            
             return {'message': 'Weight and height updated successfully.'}
         else:
             return {'message': 'Database connection error.'}, 500
@@ -166,36 +167,44 @@ class ChangePassword(Resource):
             if row and row[0] == current_password:
                 cursor.execute('UPDATE "User" SET password=? WHERE user_id=?', (new_password, user_id))
                 conn.commit()
-                conn.close()
+                
                 return {'message': 'Password changed successfully.'}
             else:
                 return {'message': 'Current password is incorrect.'}, 401
         else:
             return {'message': 'Database connection error.'}, 500
+        
+get_product_parser = reqparse.RequestParser()
+get_product_parser.add_argument('product_id', type=int, required=True, help='product id')
+
+get_product_by_name_parser = reqparse.RequestParser()
+get_product_by_name_parser.add_argument('product_name', type=str, required=True, help='product name')
 
 @product_ns.route('/addproduct')
 class AddProduct(Resource):
-    @api.doc(description='Add a new product')
-    @api.expect(product_model)
+    @product_ns.doc(description='Add a new product')
+    @product_ns.expect(product_model)
     def post(self):
         data = request.get_json()
-        retval = product.add_new_product(data)
+        retval = product.addNewProduct(data)
         return retval
-
+    
 @product_ns.route('/getproduct')
 class GetProduct(Resource):
-    @api.doc(description='Get a product by product_id')
+    @product_ns.doc(description='Get a product by product_id')
+    @product_ns.expect(get_product_parser)
     def get(self):
-        data = request.args.get('product_id')
+        data = get_product_parser.parse_args()
         retval = product.get_product_by_id(data)
         return retval
 
-@product_ns.route('/searchproductbyname')
-class SearchProductByName(Resource):
-    @api.doc(description='Search products by name')
+@product_ns.route('/getproductbyname')
+class GetProductByName(Resource):
+    @product_ns.doc(description='Get a product by product_name')
+    @product_ns.expect(get_product_by_name_parser)
     def get(self):
-        data = request.args.get('product_name')
-        retval = product.search_products_by_name(data)
+        data = get_product_by_name_parser.parse_args()
+        retval = product.get_product_by_name(data)
         return retval
     
 add_meal_model = api.model('MealModel', {
@@ -265,7 +274,7 @@ class AddProductInMeal(Resource):
     def post(self):
         data = productinmeal_ns.payload
         retval = productsinmeal.add_product_in_meal(data)
-        return jsonify(retval)
+        return retval
 
 @productinmeal_ns.route('/getproductinmeal')
 class GetProductInMeal(Resource):

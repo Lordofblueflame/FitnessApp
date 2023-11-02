@@ -10,7 +10,7 @@ def add_new_entry(data):
     cur.execute(q1,(data['user_id'],data['date'],data['water'],data['workout'],data['product_in_meal']))
     json_output = jsonify({"message": "new entry added"})
     
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
     return make_response(json_output, 200)
 
 def get_current_day_entries(date, user_id):
@@ -26,7 +26,7 @@ def get_current_day_entries(date, user_id):
     entries = [dict(zip([column[0] for column in cur.description], row)) for row in result]
     json_output = json.dumps(entries)
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
     return make_response(json_output, 200)
 
 def get_user_dayentries(user_id):
@@ -41,6 +41,6 @@ def get_user_dayentries(user_id):
     entries = [dict(zip([column[0] for column in cur.description], row)) for row in result]
     json_output = json.dumps(entries)
 
-    connectdb.commit_and_close(conn)
+    connectdb. commit(conn)
     return make_response(json_output, 200)
 
