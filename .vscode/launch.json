@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "fitness_app",
+            "name": "Fitness App(Required Virtual Machine)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
@@ -13,7 +13,7 @@
             "cwd": "${workspaceFolder}"                     
         },
         {
-            "name": "Flask Api Debug",
+            "name": "Flask Api",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/FlaskApi/api.py",
