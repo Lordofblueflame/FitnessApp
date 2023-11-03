@@ -4,7 +4,6 @@ import 'providers/user_provider.dart';
 import 'data_models/dayentries.dart';
 import 'data_models/meal.dart';
 import 'data_models/productsinmeal.dart';
-import 'data_models/user.dart';
 import 'main_app_route.dart';
 import 'views/login_related/forgot_password_view.dart';
 import 'views/login_related/login_view.dart';
@@ -28,7 +27,7 @@ class LoginAppState extends State<LoginApp> {
   late List<UserDayEntry> initialList;
   late List<ProductsInMeal> productsinmeal;
 
-  void _handleLogin(bool logged, User data, List<Meal> mealList,
+  void _handleLogin(bool logged, List<Meal> mealList,
       List<UserDayEntry> initialList, List<ProductsInMeal> productsinmeal) {
     setState(() {
       isLogged = logged;
@@ -64,12 +63,9 @@ class LoginAppState extends State<LoginApp> {
         onGenerateRoute: (settings) {
           if (settings.name == '/mainView') {
             if (isLogged) {
-              // Access UserProvider using Provider.of
-              final userProvider = Provider.of<UserProvider>(context);
 
               return MaterialPageRoute(
                 builder: (context) => MyApp(
-                  userProvider: userProvider,
                   mealList: mealList,
                   date: currentDay,
                   initialList: initialList,

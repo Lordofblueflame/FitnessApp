@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../api/day_entries_api.dart';
 import '../../api/meal_api.dart';
@@ -6,23 +7,23 @@ import '../../api/products_in_meal_api.dart';
 import '../../components/buttons/user_control_button.dart';
 import '../../components/small_components/image_square_title.dart';
 import '../../components/small_components/textfield_with_controller.dart';
-import '../../api/user_api.dart';
 import '../../data_models/dayentries.dart';
 import '../../data_models/meal.dart';
 import '../../data_models/productsinmeal.dart';
-import '../../data_models/user.dart';
 import 'package:flutter/material.dart';
-
+import '../../providers/user_provider.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key, required this.isLoggedCallback});
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  final void Function(bool, User, List<Meal>, List<UserDayEntry>, List<ProductsInMeal>)? isLoggedCallback;
+  final void Function(bool, List<Meal>, List<UserDayEntry>, List<ProductsInMeal>)? isLoggedCallback;
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context); // Access the UserProvider instance.
+
     return Scaffold(
       resizeToAvoidBottomInset : false,
       backgroundColor: Colors.lightGreen[300],
@@ -93,22 +94,21 @@ class LoginView extends StatelessWidget {
               //  sign in button
               UserControlButton(
               onTap: () async {
-                bool retval = await login(usernameController.text, passwordController.text);
+                bool retval = await userProvider.loginUser(usernameController.text, passwordController.text);
                 if (retval) {         
                   try {
                     List<Meal> mealList = await getMeals();                   
-                    User user = await getUserInfo(usernameController.text, passwordController.text);
+                    await userProvider.getUserInfoByUsernameAndPassword(usernameController.text, passwordController.text);
                     
                     String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
 
-                    List<UserDayEntry> initialList = await getCurrentDayEntries(currentDate, user.userId);
+                    List<UserDayEntry> initialList = await getCurrentDayEntries(currentDate, userProvider.user!.userId);
                     
                     List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(initialList); 
                     
-                    isLoggedCallback!(true, user, mealList, initialList, productsInMeal);
+                    isLoggedCallback!(true, mealList, initialList, productsInMeal);
                     
                     Map<String, dynamic> arguments = {
-                      'User': User,
                       'mealList': mealList,
                       'initialList': initialList,
                       'productsInMeal': productsInMeal

@@ -1,6 +1,8 @@
-import '../../data_models/user.dart';
-import 'package:flutter/widgets.dart';
 import 'dart:async';
+
+import 'package:flutter/widgets.dart';
+
+import '../../data_models/user.dart';
 
 class WaterButton extends StatefulWidget {
   final DateTime date;

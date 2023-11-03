@@ -1,11 +1,20 @@
 import 'package:flutter/foundation.dart';
-import '../repositories/user_repository.dart';
+
 import '../data_models/user.dart';
+import '../repositories/user_repository.dart';
 
 class UserProvider with ChangeNotifier {
   final UserRepository _userRepository;
 
   UserProvider(this._userRepository);
+  User? _user; 
+
+  User? get user => _user;
+
+  void setUser(User user) {
+    _user = user;
+    notifyListeners();
+  }
 
   Future<bool> updateWeightAndHeight(int userId, int weight, int height) async {
     try {
@@ -93,6 +102,7 @@ class UserProvider with ChangeNotifier {
   Future<User> getUserInfoByUsernameAndPassword(String username, String password) async {
     try {
       final responseData = await _userRepository.getUserInfoByUsernameAndPassword(username, password);
+      setUser(responseData);
       return responseData;
     } catch (e) {
       if (kDebugMode) {

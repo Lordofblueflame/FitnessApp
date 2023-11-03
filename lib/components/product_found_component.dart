@@ -1,5 +1,6 @@
-import '../data_models/product.dart';
 import 'package:flutter/material.dart';
+
+import '../data_models/product.dart';
 
 class ProductFoundComponent extends StatefulWidget {
   final Product product;

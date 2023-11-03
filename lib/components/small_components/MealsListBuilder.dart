@@ -1,22 +1,24 @@
 import '../../api/product_api.dart';
+// ignore: unused_import
 import '../../data_models/user.dart';
 import '../../components/meal_container_component.dart';
 import '../../components/water_buttonbar_component.dart';
 import '../../data_models/meal.dart';
 import '../../data_models/productsinmeal.dart';
 import 'package:flutter/material.dart';
+import '../../providers/user_provider.dart';
 
 class MealsListBuilder extends StatefulWidget {
   final List<Meal> meals;
   final DateTime date;
-  final User user;
+  final UserProvider userProvider;
   final List<ProductsInMeal> productsinmeal;
 
   const MealsListBuilder({
     Key? key,
     required this.meals,
     required this.date,
-    required this.user,
+    required this.userProvider,
     required this.productsinmeal,
   }) : super(key: key);
 
@@ -51,11 +53,12 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
   }
 
   int calcWater() {
-    return widget.user.weight * 35;
+    return widget.userProvider.user!.weight * 35;
   }
 
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder<void>(
       future: calculateMealKcals(),
       builder: (context, snapshot) {
@@ -69,7 +72,7 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
                   water: 0,
                   neededWater: calcWater(),
                   date: widget.date,
-                  user: widget.user,
+                  user: widget.userProvider.user!,
                 );
               }
               final Meal meal = widget.meals[index];
@@ -79,7 +82,7 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
                 meal: meal,
                 mealKcal: mealKcalValue,
                 date: widget.date,
-                user: widget.user,
+                user: widget.userProvider.user!,
                 key: UniqueKey(),
               );
             },

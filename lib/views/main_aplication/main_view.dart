@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import '../../api/day_entries_api.dart';
 import '../../api/product_api.dart';
 import '../../api/products_in_meal_api.dart';
@@ -9,26 +13,24 @@ import '../../data_models/dayentries.dart';
 import '../../data_models/macrodata.dart';
 import '../../data_models/meal.dart';
 import '../../data_models/productsinmeal.dart';
-import '../../data_models/user.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../../providers/user_provider.dart';
 
 // ignore: must_be_immutable
 class MainView extends StatefulWidget {
   MainView({
-    super.key,
+    Key? key,
     required this.initialDate,
     required this.mealList,
-    required this.user,
     required this.initialList,
     required this.productsinmeal,
-  });
+    required this.userProvider
+  }) : super(key: key);
 
   late DateTime initialDate;
-  final User user;
   late List<UserDayEntry> initialList;
   late List<ProductsInMeal> productsinmeal;
   final List<Meal> mealList;
+  final UserProvider userProvider;
 
   @override
   MainViewState createState() => MainViewState();
@@ -39,10 +41,12 @@ class MainViewState extends State<MainView> {
   late MacroData total;
   late double userBmi = 0;
   late List<ProductsInMeal> todayProductsInMeal = [];
+  late UserProvider userProvider;
 
   @override
   void initState() {
     super.initState();
+    userProvider = widget.userProvider;
     initializeData();
     updateData();
   }
@@ -57,7 +61,7 @@ class MainViewState extends State<MainView> {
 
   Future<void> _updateInitialListAndProductsInMeal() async {
     String date = DateFormat('yyyy-MM-dd').format(widget.initialDate).toString();
-    List<UserDayEntry> updatedInitialList = await getCurrentDayEntries(date, widget.user.userId);
+    List<UserDayEntry> updatedInitialList = await getCurrentDayEntries(date, userProvider.user!.userId);
     List<ProductsInMeal> updatedProductsInMeal = await getProductInMealFromDayEntries(updatedInitialList);
 
     setState(() {
@@ -70,7 +74,7 @@ class MainViewState extends State<MainView> {
     needed = MacroData(kcal: 0, proteins: 0, fats: 0, carbs: 0);
     total = MacroData(kcal: 0, proteins: 0, fats: 0, carbs: 0);
 
-    userBmi = calculateBMI(widget.user.weight, widget.user.height);
+    userBmi = calculateBMI(userProvider.user!.weight, userProvider.user!.height);
     if (userBmi <= 18.5) {
       needed.kcal = 1800;
     }
@@ -174,7 +178,7 @@ Widget build(BuildContext context) {
         MealsListBuilder(
           meals: widget.mealList,
           date: updatedDate,
-          user: widget.user,
+          userProvider: userProvider,
           productsinmeal: todayProductsInMeal,
         ),
       ],
