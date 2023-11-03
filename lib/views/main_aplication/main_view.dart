@@ -125,7 +125,6 @@ Future<void> updateData() async {
     });
   }
 
-
   double calculateBMI(int weight, int height) {
     double bmi = weight / (height * height);
     return bmi;
@@ -141,10 +140,7 @@ void _handleDateSelected(DateTime selectedDate) async {
   setState(() {
     updateData();
   });
-  
 }
-
-
 
 @override
 Widget build(BuildContext context) {
@@ -177,7 +173,7 @@ Widget build(BuildContext context) {
       children: [
         MealsListBuilder(
           meals: widget.mealList,
-          date: updatedDate, // Use the updated date here
+          date: updatedDate,
           user: widget.user,
           productsinmeal: todayProductsInMeal,
         ),

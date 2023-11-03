@@ -12,12 +12,13 @@ class MealsListBuilder extends StatefulWidget {
   final User user;
   final List<ProductsInMeal> productsinmeal;
 
-  const MealsListBuilder({super.key, 
+  const MealsListBuilder({
+    Key? key,
     required this.meals,
     required this.date,
     required this.user,
     required this.productsinmeal,
-  });
+  }) : super(key: key);
 
   @override
   _MealsListBuilderState createState() => _MealsListBuilderState();
@@ -29,12 +30,12 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
 
   @override
   void initState() {
-    calculateMealKcals();
     super.initState();
+    calculateMealKcals();
   }
 
   Future<void> calculateMealKcals() async {
-    mealKcal = [];
+    List<int> changes = [];
 
     for (final meal in widget.meals) {
       int totalKcal = 0;
@@ -44,8 +45,9 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
           totalKcal += product.calories;
         }
       }
-      mealKcal.add(totalKcal);
+      changes.add(totalKcal);
     }
+      mealKcal = changes;
   }
 
   int calcWater() {
