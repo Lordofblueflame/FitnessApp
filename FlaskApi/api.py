@@ -321,7 +321,7 @@ class GetUserDayEntries(Resource):
         return retval
     
 if __name__ == '__main__':
-    app.run(host = "192.168.1.125", port = '5000')
+    app.run(host = "192.168.0.91", port = '5000')
 
 #curl -X GET -H "Content-Type: application/json" -d "{ \"email\" : \"Cepkamil@gmail.com\" }" http://192.168.0.178:5000/user/recoverpassword
 

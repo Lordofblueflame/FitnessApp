@@ -1,23 +1,26 @@
 import '../../api/product_api.dart';
+// ignore: unused_import
 import '../../data_models/user.dart';
 import '../../components/meal_container_component.dart';
 import '../../components/water_buttonbar_component.dart';
 import '../../data_models/meal.dart';
 import '../../data_models/productsinmeal.dart';
 import 'package:flutter/material.dart';
+import '../../providers/user_provider.dart';
 
 class MealsListBuilder extends StatefulWidget {
   final List<Meal> meals;
   final DateTime date;
-  final User user;
+  final UserProvider userProvider;
   final List<ProductsInMeal> productsinmeal;
 
-  const MealsListBuilder({super.key, 
+  const MealsListBuilder({
+    Key? key,
     required this.meals,
     required this.date,
-    required this.user,
+    required this.userProvider,
     required this.productsinmeal,
-  });
+  }) : super(key: key);
 
   @override
   _MealsListBuilderState createState() => _MealsListBuilderState();
@@ -26,36 +29,52 @@ class MealsListBuilder extends StatefulWidget {
 
 class _MealsListBuilderState extends State<MealsListBuilder> {
   late List<int> mealKcal = [0,0,0,0,0];
+  late Future<void> _calculationFuture;
 
   @override
   void initState() {
-    calculateMealKcals();
     super.initState();
+    _calculationFuture = calculateMealKcals();
   }
 
+
   Future<void> calculateMealKcals() async {
-    mealKcal = [];
+    List<int> changes = [];
+
+    final productsinmealCopy = List<ProductsInMeal>.from(widget.productsinmeal);
 
     for (final meal in widget.meals) {
       int totalKcal = 0;
-      for (final productInMeal in widget.productsinmeal) {
+      for (final productInMeal in productsinmealCopy) {
         if (productInMeal.mealId == meal.mealId) {
           final product = await getProductById(productInMeal.productId);
           totalKcal += product.calories;
         }
       }
-      mealKcal.add(totalKcal);
+      changes.add(totalKcal);
+    }
+    setState(() {
+      mealKcal = changes;
+    });
+  }
+
+  @override
+  void didUpdateWidget(MealsListBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.productsinmeal != oldWidget.productsinmeal) {
+      calculateMealKcals();
     }
   }
 
   int calcWater() {
-    return widget.user.weight * 35;
+    return widget.userProvider.user!.weight * 35;
   }
 
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder<void>(
-      future: calculateMealKcals(),
+      future: _calculationFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView.builder(
@@ -67,7 +86,7 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
                   water: 0,
                   neededWater: calcWater(),
                   date: widget.date,
-                  user: widget.user,
+                  user: widget.userProvider.user!,
                 );
               }
               final Meal meal = widget.meals[index];
@@ -77,7 +96,7 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
                 meal: meal,
                 mealKcal: mealKcalValue,
                 date: widget.date,
-                user: widget.user,
+                user: widget.userProvider.user!,
                 key: UniqueKey(),
               );
             },

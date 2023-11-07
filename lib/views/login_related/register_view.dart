@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
+
 import '../../api/user_api.dart';
 import '../../components/buttons/user_control_button.dart';
 import '../../components/small_components/textfield_with_controller.dart';
-import 'package:flutter/material.dart';
 
 class RegisterNowView extends StatelessWidget{
   RegisterNowView({super.key});

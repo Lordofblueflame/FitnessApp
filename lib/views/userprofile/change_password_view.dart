@@ -1,18 +1,21 @@
-import '../../api/user_api.dart';
+import 'package:flutter/material.dart';
+
 import '../../components/buttons/user_control_button.dart';
 import '../../components/header_component.dart';
 import '../../components/small_components/textfield_with_controller.dart';
-import 'package:flutter/material.dart';
+import '../../providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class ChangePasswordView extends StatelessWidget {
-  ChangePasswordView({super.key, required this.userid});
+  ChangePasswordView({super.key});
 
-  final int userid;
   final oldPassController = TextEditingController();
   final newPassController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.lightGreen[300],
       appBar: AppBar(
@@ -45,8 +48,8 @@ class ChangePasswordView extends StatelessWidget {
             const SizedBox(height: 40,),
 
             UserControlButton(
-              onTap: () async {
-                bool retval = await changePassword(userid,oldPassController.text,newPassController.text);
+              onTap: () async {     
+                bool retval = await userProvider.changeUserPassword(userProvider.user!.userId,oldPassController.text,newPassController.text);
                 if(retval){
                   showDialog(                     
                     context: context, 
