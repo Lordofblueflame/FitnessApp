@@ -1,8 +1,9 @@
-import '../data_models/user.dart';
+import 'package:flutter/material.dart';
+
 import '../components/buttons/add_product_button.dart';
 import '../data_models/meal.dart';
+import '../data_models/user.dart';
 import '../views/main_aplication/search_products_view.dart';
-import 'package:flutter/material.dart';
 
 class MealContainerComponent extends StatefulWidget {
   final Meal meal;

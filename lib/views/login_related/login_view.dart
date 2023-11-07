@@ -1,28 +1,31 @@
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import '../../api/day_entries_api.dart';
 import '../../api/meal_api.dart';
 import '../../api/products_in_meal_api.dart';
 import '../../components/buttons/user_control_button.dart';
 import '../../components/small_components/image_square_title.dart';
 import '../../components/small_components/textfield_with_controller.dart';
-import '../../api/user_api.dart';
 import '../../data_models/dayentries.dart';
 import '../../data_models/meal.dart';
 import '../../data_models/productsinmeal.dart';
-import '../../data_models/user.dart';
 import 'package:flutter/material.dart';
-
+import '../../providers/user_provider.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key, required this.isLoggedCallback});
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  final void Function(bool, User, List<Meal>, List<UserDayEntry>, List<ProductsInMeal>)? isLoggedCallback;
+  final void Function(bool, List<Meal>, List<UserDayEntry>, List<ProductsInMeal>)? isLoggedCallback;
 
   @override
   Widget build(BuildContext context) {
-    print(context);
+    final userProvider = Provider.of<UserProvider>(context); // Access the UserProvider instance.
+
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       backgroundColor: Colors.lightGreen[300],
       body: SafeArea(
         child: Center(
@@ -90,47 +93,49 @@ class LoginView extends StatelessWidget {
               
               //  sign in button
               UserControlButton(
-                onTap: () async {
-                  bool retval = await login(usernameController.text,passwordController.text);
-                  if(retval)
-                  {         
-                    try {
-                      print(retval);
-                      List<Meal> mealList = await fetchMeals();                   
-                      User user = await getUserInfo(usernameController.text,passwordController.text);
-                      List<UserDayEntry> initialList = await getUserDayEntries(user.userId);
-                      List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(initialList); 
-                      isLoggedCallback!(true,user,mealList,initialList,productsInMeal);
-                      Map<String, dynamic> arguments = {
-                        'User': User,
-                        'mealList': mealList,
-                        'initialList': initialList,
-                        'productsInMeal': productsInMeal
-                      };
-                      Navigator.pushReplacementNamed(context, '/mainView', arguments: arguments);
-                    } catch(e) {
-                      print('Błąd podczas pobierania informacji o użytkowniku: $e');
-                      showDialog(                     
-                        context: context, 
-                        builder: (BuildContext context) => const AlertDialog(
-                          title: Text('Connection error'),
-                          content: Text("Something went wrong with connection please try again in some time"),
-                        )
-                      );
-                    }
-                  }
-                  else
-                  {
+              onTap: () async {
+                bool retval = await userProvider.loginUser(usernameController.text, passwordController.text);
+                if (retval) {         
+                  try {
+                    List<Meal> mealList = await getMeals();                   
+                    await userProvider.getUserInfoByUsernameAndPassword(usernameController.text, passwordController.text);
+                    
+                    String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
+
+                    List<UserDayEntry> initialList = await getCurrentDayEntries(currentDate, userProvider.user!.userId);
+                    
+                    List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(initialList); 
+                    
+                    isLoggedCallback!(true, mealList, initialList, productsInMeal);
+                    
+                    Map<String, dynamic> arguments = {
+                      'mealList': mealList,
+                      'initialList': initialList,
+                      'productsInMeal': productsInMeal
+                    };
+                    
+                    Navigator.pushReplacementNamed(context, '/mainView', arguments: arguments);
+                  } catch(e) {
+                    print('Error while handling user data: $e');
                     showDialog(                     
                       context: context, 
                       builder: (BuildContext context) => const AlertDialog(
-                        title: Text('Cannot login'),
-                        content: Text("You've provided wrong username or password"),
+                        title: Text('Connection error'),
+                        content: Text("Something went wrong with the connection. Please try again later."),
                       )
                     );
-                    return retval;
                   }
-                },
+                } else {
+                  showDialog(                     
+                    context: context, 
+                    builder: (BuildContext context) => const AlertDialog(
+                      title: Text('Cannot login'),
+                      content: Text("You've provided the wrong username or password"),
+                    )
+                  );
+                  return retval;
+                }
+              },
                 buttonText: 'Sign in'
               ),
               

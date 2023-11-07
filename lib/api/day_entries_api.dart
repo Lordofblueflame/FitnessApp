@@ -2,9 +2,11 @@ import 'dart:convert';
 import '../data_models/dayentries.dart';
 import 'package:http/http.dart' as http;
 import 'common_api.dart';
+import '../log/debug_helper.dart';
 
 Future<void> addNewEntry(Map<String, dynamic> data) async {
-  final Uri url = Uri.parse('$adres/dayentries/addnewentry');
+  DebugHelper.printFunctionName();
+  final Uri url = Uri.parse('$address/dayentries/addnewentry');
 
   final response = await http.post(
     url,
@@ -13,14 +15,14 @@ Future<void> addNewEntry(Map<String, dynamic> data) async {
   );
 
   if (response.statusCode == 200) {
-    // Udało się dodać nowy wpis
   } else {
-    // Wystąpił błąd podczas żądania API
   }
 }
 
 Future<List<UserDayEntry>> getUserDayEntries(int userId) async {
-  final Uri url = Uri.parse('$adres/dayentries/getuserdayentries?user_id=$userId');
+  DebugHelper.printFunctionName();
+
+  final Uri url = Uri.parse('$address/dayentries/getuserdayentries?user_id=$userId');
 
   final response = await http.get(url);
 
@@ -28,12 +30,14 @@ Future<List<UserDayEntry>> getUserDayEntries(int userId) async {
     final List<dynamic> jsonResponse = jsonDecode(response.body);
     return jsonResponse.map((data) => UserDayEntry.fromJson(data)).toList();
   } else {
-    throw Exception('Błąd podczas pobierania danych z API: ${response.statusCode}');
+    throw Exception('Error fetching data from the API: ${response.statusCode}');
   }
 }
 
 Future<List<UserDayEntry>> getCurrentDayEntries(String date, int userId) async {
-  final Uri url = Uri.parse('$adres/dayentries/getdayentries?date="$date"&user_id=$userId');
+  DebugHelper.printFunctionName();
+
+  final Uri url = Uri.parse('$address/dayentries/getdayentries?date=$date&user_id=$userId');
 
   final response = await http.get(url);
 
@@ -42,6 +46,6 @@ Future<List<UserDayEntry>> getCurrentDayEntries(String date, int userId) async {
     final List<UserDayEntry> dayEntries = List<UserDayEntry>.from(jsonResponse.map((entry) => UserDayEntry.fromJson(entry)));
     return dayEntries;
   } else {
-    throw Exception('Błąd podczas pobierania wpisów na dany dzień: ${response.statusCode}');
+    throw Exception('Error fetching entries for a specific day: ${response.statusCode}');
   }
 }

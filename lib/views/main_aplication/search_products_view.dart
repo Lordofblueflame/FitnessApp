@@ -156,8 +156,6 @@ class MySearchDelegate extends SearchDelegate{
     };
     await addNewEntry(data);
 
-    // np. wywołanie żądań API i nawigacja do zaktualizowanego mainView
-    print('Clicked on product: ${product.productName} meal: ${meal.mealName}');
-    // Wywołaj żądania API i nawiguj do zaktualizowanego mainView
+
   }
 }

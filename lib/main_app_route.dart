@@ -1,27 +1,31 @@
-// ignore: unused_import
-import 'api/day_entries_api.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'data_models/dayentries.dart';
 import 'data_models/meal.dart';
 import 'data_models/productsinmeal.dart';
-import 'data_models/user.dart';
 import 'views/main_aplication/main_view.dart';
 import 'views/userprofile/change_parameters_view.dart';
 import 'views/userprofile/change_password_view.dart';
 import 'views/userprofile/userprofile_view.dart';
-import 'package:flutter/material.dart';
-
+import 'providers/user_provider.dart';
 class MyApp extends StatelessWidget {
-  final User user; // Dodano modyfikator 'final' przed 'User'
+  const MyApp({
+    Key? key,
+    required this.mealList,
+    required this.date,
+    required this.initialList,
+    required this.productsinmeal,
+  }) : super(key: key);
+
   final List<Meal> mealList;
   final DateTime date;
   final List<UserDayEntry> initialList;
   final List<ProductsInMeal> productsinmeal;
-  const MyApp({super.key, required this.user, required this.mealList, required this.date, required this.initialList, required this.productsinmeal}); 
-
 
   @override
   Widget build(BuildContext context) {
-    //init state api zeby pobrac User wszystkie i wypelnic 
+
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
@@ -39,10 +43,13 @@ class MyApp extends StatelessWidget {
       highContrastTheme: ThemeData.light(),
       initialRoute: '/mainView',
       routes: {
-        '/mainView': (context) => MainView(initialDate: date, mealList: mealList, user: user, initialList: initialList, productsinmeal:productsinmeal),
-        '/userprofile': (context) => UserProfileView(thisUser: user),
-        '/changeparameters': (context) => ChangeParametersView(user: user),
-        '/changepassword': (context) => ChangePasswordView(userid: user.userId),
+        '/mainView': (context) => MainView(
+                                          initialDate: date, 
+                                          mealList: mealList,
+                                          userProvider: Provider.of<UserProvider>(context, listen: false)),
+        '/userprofile': (context) => const UserProfileView(),
+        '/changeparameters': (context) => ChangeParametersView(),
+        '/changepassword': (context) => ChangePasswordView(),
       },
     );
   }

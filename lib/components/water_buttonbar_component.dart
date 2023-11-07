@@ -1,7 +1,8 @@
-import '../api/day_entries_api.dart';
-import '../data_models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../api/day_entries_api.dart';
+import '../data_models/user.dart';
 import 'buttons/add_water_button.dart';
 
 // ignore: must_be_immutable

@@ -1,11 +1,12 @@
-import 'package:flutter/foundation.dart'; 
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String adres = "http://192.168.1.125:5000";
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+const String address = "http://192.168.0.91:5000";
 
 Future<void> connection() async {
-  const url = "$adres/"; // Zmień adres na swój
+  const url = "$address/"; 
   final headers = {"Content-Type": "application/json"};
   try {
     final response = await http.get(Uri.parse(url), headers: headers);
@@ -14,15 +15,15 @@ Future<void> connection() async {
       final responseData = json.decode(response.body);
       if (kDebugMode) {
         print(responseData);
-      } // Przetwarzaj odpowiedź odpowiednio
+      } 
     } else {
       if (kDebugMode) {
-        print('Błąd: ${response.statusCode}');
+        print('Error: ${response.statusCode}');
       }
     }
   } catch (e) {
     if (kDebugMode) {
-      print('Wystąpił błąd: $e');
+      print('An error occurred: $e');
     }
   }
 }

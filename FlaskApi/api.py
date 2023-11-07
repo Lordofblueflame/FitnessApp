@@ -6,8 +6,10 @@ import productsinmeal
 import dayentries
 import connectdb
 from flask_restx import Api, Resource, fields, reqparse
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 api.title = "Fitness App -"
 api.description = "TechStack: Flutter,Python,Flask,Anaconda,RestApi"
@@ -54,7 +56,6 @@ change_password_request_model = api.model('ChangePasswordRequestModel', {
 })
 
 product_model = api.model('Product', {
-    'product_id': fields.Integer(description = "Product id", example = 1),
     'product_name': fields.String(description = 'Name of the product', example = 'mleko'),
     'calories': fields.Float(description = 'Calories in the product', example = '150'),
     'proteins': fields.Float(description = 'Proteins in the product', example = '5'),
@@ -63,21 +64,17 @@ product_model = api.model('Product', {
 })
 
 product_in_meal_model = api.model('ProductInMeal', {
-    'products_in_meal': fields.Integer(description ='Product in meal description', example = 1),
     'meal_id': fields.Integer(description ='Meal ID', example = 1),
     'product_id': fields.Integer(description ='Product ID', example = 5),
 })
 
-user_day_entries_model = api.model('UserDayEntries', {
-    'entry id': fields.Integer(description = 'entry id', example = 4),
+day_entries_model = api.model('UserDayEntries', {
     'user id': fields.Integer(description = 'user id', example = 7),
     'date': fields.String(description = 'date entry was made', example='2023-07-01'),
     'water': fields.Integer(description = 'Amount of water user consumed', example = 0),
     'workout': fields.Integer(description='Meal ID', example = 0),
     'products_in_meal': fields.Integer(description ='Product in meal id', example = 3),
 })
-
-# those models represent single data record from database you can use it for testing Api
 
 user_ns = api.namespace('user', description='User operations')
 product_ns = api.namespace('product', description='Product operations')
@@ -132,7 +129,6 @@ class UserGetUserInfo(Resource):
     def post(self):
         data = request.get_json() 
         retval = user.get_user_info(data)
-        print(retval)
         return jsonify(retval) 
 
 @user_ns.route('/update_weight_height')
@@ -149,7 +145,7 @@ class UpdateWeightHeight(Resource):
             cur = conn.cursor()
             cur.execute('UPDATE "User" SET weight=?, height=? WHERE user_id=?', (weight, height, user_id))
             conn.commit()
-            conn.close()
+            
             return {'message': 'Weight and height updated successfully.'}
         else:
             return {'message': 'Database connection error.'}, 500
@@ -171,44 +167,65 @@ class ChangePassword(Resource):
             if row and row[0] == current_password:
                 cursor.execute('UPDATE "User" SET password=? WHERE user_id=?', (new_password, user_id))
                 conn.commit()
-                conn.close()
+                
                 return {'message': 'Password changed successfully.'}
             else:
                 return {'message': 'Current password is incorrect.'}, 401
         else:
             return {'message': 'Database connection error.'}, 500
+        
+get_product_parser = reqparse.RequestParser()
+get_product_parser.add_argument('product_id', type=int, required=True, help='product id')
 
+get_product_by_name_parser = reqparse.RequestParser()
+get_product_by_name_parser.add_argument('product_name', type=str, required=True, help='product name')
 
 @product_ns.route('/addproduct')
 class AddProduct(Resource):
-    @api.doc(description='Add a new product')
-    @api.expect(product_model)
+    @product_ns.doc(description='Add a new product')
+    @product_ns.expect(product_model)
     def post(self):
         data = request.get_json()
-        retval = product.add_new_product(data)
+        retval = product.addNewProduct(data)
         return retval
-
+    
 @product_ns.route('/getproduct')
 class GetProduct(Resource):
-    @api.doc(description='Get a product by product_id')
+    @product_ns.doc(description='Get a product by product_id')
+    @product_ns.expect(get_product_parser)
     def get(self):
-        data = request.args.get('product_id')
+        data = get_product_parser.parse_args()
         retval = product.get_product_by_id(data)
         return retval
 
-@product_ns.route('/searchproductbyname')
-class SearchProductByName(Resource):
-    @api.doc(description='Search products by name')
+@product_ns.route('/getproductbyname')
+class GetProductByName(Resource):
+    @product_ns.doc(description='Get a product by product_name')
+    @product_ns.expect(get_product_by_name_parser)
     def get(self):
-        data = request.args.get('product_name')
-        retval = product.search_products_by_name(data)
+        data = get_product_by_name_parser.parse_args()
+        retval = product.get_product_by_name(data)
         return retval
+    
+add_meal_model = api.model('MealModel', {
+    'meal_id': fields.Integer(description ='Meal ID', example = 1),
+    'meal_name': fields.String(description ='Meal Name', example = 'Breakfast'),
+})
 
+add_meal_model = api.model('AddMealModel', {
+    'meal_name': fields.String(description='Meal name', example='Breakfast'),
+})
+
+get_meal_parser = reqparse.RequestParser()
+get_meal_parser.add_argument('meal_id', type=int, required=True, help='Meal ID')
+
+get_meal_id_parser = reqparse.RequestParser()
+get_meal_id_parser.add_argument('meal_name', type=str, required=True, help='Meal Name')
 
 @meal_ns.route('/addmeal')
 class AddMeal(Resource):
-    @api.doc(description='Add a new meal')
-    @api.expect(product_model)
+    @meal_ns.doc(description='Add a new meal')
+    @meal_ns.expect(add_meal_model)
     def post(self):
         data = request.get_json()
         retval = meal.add_new_meal(data)
@@ -216,31 +233,36 @@ class AddMeal(Resource):
 
 @meal_ns.route('/getmealname')
 class GetMealName(Resource):
-    @api.doc(description='Get meal name by meal_id')
+    @meal_ns.doc(description='Get meal name by meal_id')
+    @meal_ns.expect(get_meal_parser)
     def get(self):
-        data = request.args.get('meal_id')
-        retval = meal.get_meal_name(data)
+        args = get_meal_parser.parse_args()
+        meal_id = args['meal_id']
+        retval = meal.get_meal_name(meal_id)
         return retval
 
 @meal_ns.route('/getmealbyid')
 class GetMealById(Resource):
-    @api.doc(description='Get meal by meal_id')
+    @meal_ns.doc(description='Get meal by meal_id')
+    @meal_ns.expect(get_meal_parser)
     def get(self):
-        data = request.args.get('meal_id')
-        retval = meal.get_meal_by_id(data)
+        meal_id = request.args.get('meal_id')
+        retval = meal.get_meal_by_id(meal_id)
         return retval
 
 @meal_ns.route('/getmealidbyname')
 class GetMealIdByName(Resource):
-    @api.doc(description='Get meal_id by meal name')
+    @meal_ns.doc(description='Get meal_id by meal name')
+    @meal_ns.expect(get_meal_id_parser)
     def get(self):
-        mealName = request.args.get('mealName')
-        retval = meal.get_meal_id_by_name(mealName)
+        args = get_meal_id_parser.parse_args()
+        meal_name = args['meal_name']
+        retval = meal.get_meal_id_by_name(meal_name)
         return retval
 
 @meal_ns.route('/getmeals')
 class GetMeals(Resource):
-    @api.doc(description='Get all meals')
+    @meal_ns.doc(description='Get all meals')
     def get(self):
         retval = meal.get_meals()
         return retval
@@ -251,20 +273,7 @@ class AddProductInMeal(Resource):
     @productinmeal_ns.expect(product_in_meal_model)
     def post(self):
         data = productinmeal_ns.payload
-        # You need to implement logic to add a product to a meal based on the payload data
-        # Replace the following line with your implementation
-        retval = {'message': 'Added product to meal: {}'.format(data)}
-        return retval
-
-@productinmeal_ns.route('/getproductinmealbyid')
-class GetProductInMealById(Resource):
-    @productinmeal_ns.doc(description='Get product in meal by ID')
-    @productinmeal_ns.param('productinmeal', 'Product in meal ID')
-    def get(self):
-        productinmeal_id = int(request.args.get('productinmeal'))
-        # You need to implement logic to fetch product in meal by ID
-        # Replace the following line with your implementation
-        retval = {'message': 'Fetching product in meal by ID: {}'.format(productinmeal_id)}
+        retval = productsinmeal.add_product_in_meal(data)
         return retval
 
 @productinmeal_ns.route('/getproductinmeal')
@@ -276,25 +285,18 @@ class GetProductInMeal(Resource):
         retval = productsinmeal.get_product_in_meal(data)
         return retval
 
-day_entries_model = dayentries_ns.model('DayEntries', {
-    'date': fields.String(description='Date in YYYY-MM-DD format', required=True),
-    'user_id': fields.Integer(description='User ID', required=True),
-    'water': fields.Float(description='Water intake'),
-    'workout': fields.String(description='Workout description'),
-    'product_in_meal': fields.String(description='Product in meal description')
-})
+get_day_entries_parser = reqparse.RequestParser()
+get_day_entries_parser.add_argument('date', type=str, required=True, help='Date in YYYY-MM-DD format')
+get_day_entries_parser.add_argument('user_id', type=str, required=True, help='User ID')
 
 @dayentries_ns.route('/getdayentries')
 class GetDayEntries(Resource):
     @dayentries_ns.doc(description='Get day entries by date and user_id')
-    @dayentries_ns.expect(day_entries_model)
+    @dayentries_ns.expect(get_day_entries_parser)
     def get(self):
-        data = dayentries_ns.payload
-        date = data['date']
-        user_id = data['user_id']
-        # You need to implement logic to fetch day entries based on date and user_id
-        # Replace the following line with your implementation
-        retval = {'message': 'Fetching day entries for date {} and user_id {}'.format(date, user_id)}
+        date = request.args.get('date')
+        user_id = request.args.get('user_id')
+        retval = dayentries.get_current_day_entries(date,user_id)
         return retval
 
 @dayentries_ns.route('/addnewentry')
@@ -302,23 +304,24 @@ class AddNewEntry(Resource):
     @dayentries_ns.doc(description='Add a new day entry')
     @dayentries_ns.expect(day_entries_model)
     def post(self):
-        data = dayentries_ns.payload
-        # You need to implement logic to add a new day entry based on the payload data
-        # Replace the following line with your implementation
-        retval = {'message': 'Added new day entry: {}'.format(data)}
+        data = request.get_json()
+        retval = dayentries.add_new_entry(data)
         return retval
+
+get_user_day_entries_parser = reqparse.RequestParser()
+get_user_day_entries_parser.add_argument('user_id', type=int, required=True, help='User ID')
 
 @dayentries_ns.route('/getuserdayentries')
 class GetUserDayEntries(Resource):
     @dayentries_ns.doc(description='Get day entries by user_id')
-    @dayentries_ns.param('user_id', 'User ID')
+    @dayentries_ns.expect(get_user_day_entries_parser)
     def get(self):
-        data = int(request.args.get('user_id'))
-        retval = dayentries.get_user_dayentries(data)
+        user_id = request.args.get('user_id')
+        retval = dayentries.get_user_dayentries(user_id)
         return retval
     
 if __name__ == '__main__':
-    app.run(host = "192.168.1.125", port = '5000')
+    app.run(host = "192.168.0.91", port = '5000')
 
 #curl -X GET -H "Content-Type: application/json" -d "{ \"email\" : \"Cepkamil@gmail.com\" }" http://192.168.0.178:5000/user/recoverpassword
 
