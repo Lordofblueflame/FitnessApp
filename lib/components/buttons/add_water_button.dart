@@ -1,18 +1,18 @@
-import 'dart:async';
-
-import 'package:flutter/widgets.dart';
-
+import 'package:flutter/material.dart';
 import '../../data_models/user.dart';
+import '../small_components/filling_glass_animation.dart';
 
 class WaterButton extends StatefulWidget {
   final DateTime date;
   final User user;
+  final bool isFull; 
   final Function(bool isTapped) onTap;
 
   const WaterButton({
     Key? key,
     required this.date,
     required this.user,
+    this.isFull = false,
     required this.onTap,
   }) : super(key: key);
 
@@ -21,56 +21,51 @@ class WaterButton extends StatefulWidget {
 }
 
 class WaterButtonState extends State<WaterButton> {
-  bool isTapped = false;
-  bool isEmpty = true;
-  String source = "lib/assets/images/empty.png";
+  late bool isFull;
+  GlobalKey<FillingGlassAnimationState> _animationKey = GlobalKey();
 
-  void changeSourceWithDelay() {
-    Timer(const Duration(milliseconds: 250), () {
-      setState(() {
-        if (isEmpty) {
-          source = "lib/assets/images/half.png";
-        } else {
-          source = "lib/assets/images/overhalf.png";
-        }
-      });
-    });
-    Timer(const Duration(milliseconds: 250), () {
-      setState(() {
-        if (isEmpty) {
-          source = "lib/assets/images/overhalf.png";
-        } else {
-          source = "lib/assets/images/half.png";
-        }
-      });
-    });
-    Timer(const Duration(milliseconds: 250), () {
-      setState(() {
-        if (isEmpty) {
-          source = "lib/assets/images/full.png";
-          isEmpty = false;
-        } else {
-          source = "lib/assets/images/empty.png";
-          isEmpty = true;
-        }
-      });
-    });
+  @override
+  void initState() {
+    super.initState();
+    isFull = widget.isFull; 
+  }
+
+  @override
+  void didUpdateWidget(WaterButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isFull != isFull) {
+      isFull = widget.isFull;
+      if (isFull) {
+        _animationKey.currentState?.setToFull();
+      } else {
+        _animationKey.currentState?.setToEmpty();
+      }
+    }
+  }
+
+  void toggleWaterLevel() {
+    _animationKey.currentState?.startAnimation();
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isTapped = !isTapped;
-          widget.onTap(isTapped); // Wywołanie funkcji przekazanej z WaterButtonBarComponent
-          changeSourceWithDelay();
-        });
-      },
-      child: Image.asset(
-        source,
-        height: 37,
+      onTap: toggleWaterLevel,
+      child: SizedBox(
         width: 37,
+        height: 37,
+        child: FillingGlassAnimation(
+          key: _animationKey,
+          animationStatusListener: (status) {
+            if (status == AnimationStatus.completed) {
+              setState(() => isFull = true);
+              widget.onTap(true);
+            } else if (status == AnimationStatus.dismissed) {
+              setState(() => isFull = false);
+              widget.onTap(false);
+            }
+          },
+        ),
       ),
     );
   }

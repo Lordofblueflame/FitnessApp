@@ -1,4 +1,7 @@
+import 'package:intl/intl.dart';
+import '../../api/day_entries_api.dart';
 import '../../api/product_api.dart';
+
 // ignore: unused_import
 import '../../data_models/user.dart';
 import '../../components/meal_container_component.dart';
@@ -7,6 +10,8 @@ import '../../data_models/meal.dart';
 import '../../data_models/productsinmeal.dart';
 import 'package:flutter/material.dart';
 import '../../providers/user_provider.dart';
+import '../../data_models/dayentries.dart';
+
 
 class MealsListBuilder extends StatefulWidget {
   final List<Meal> meals;
@@ -30,6 +35,7 @@ class MealsListBuilder extends StatefulWidget {
 class _MealsListBuilderState extends State<MealsListBuilder> {
   late List<int> mealKcal = [0,0,0,0,0];
   late Future<void> _calculationFuture;
+  late int initialWater = 0;
 
   @override
   void initState() {
@@ -37,10 +43,17 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
     _calculationFuture = calculateMealKcals();
   }
 
+  Future<List<UserDayEntry>> getDayEntriesWithWater() async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(widget.date);
+    List<UserDayEntry> dayEntries = await getCurrentDayEntries(formattedDate, widget.userProvider.user!.userId); 
+    return dayEntries.where((entry) {
+      return DateFormat('yyyy-MM-dd').format(widget.date) == formattedDate && entry.water == initialWater;
+    }).toList();
+  }
 
   Future<void> calculateMealKcals() async {
     List<int> changes = [];
-
+    
     final productsinmealCopy = List<ProductsInMeal>.from(widget.productsinmeal);
 
     for (final meal in widget.meals) {
@@ -83,7 +96,7 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
             itemBuilder: (context, index) {
               if (index == widget.meals.length) {
                 return WaterButtonBarComponent(
-                  water: 0,
+                  initialWater: initialWater,
                   neededWater: calcWater(),
                   date: widget.date,
                   user: widget.userProvider.user!,
