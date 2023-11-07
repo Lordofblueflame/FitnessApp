@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'backend/data_models/day_entries.dart';
+import 'backend/data_models/meal.dart';
+import 'backend/data_models/products_in_meal.dart';
+import 'business_logic/provider-architecture/user_provider.dart';
+import 'frontend/main_page/views/main_page_view.dart';
+import 'frontend/user_profile/change_parameters_view.dart';
+import 'frontend/user_profile/change_password_view.dart';
+import 'frontend/user_profile/userprofile_view.dart';
 
-import 'data_models/dayentries.dart';
-import 'data_models/meal.dart';
-import 'data_models/productsinmeal.dart';
-import 'views/main_aplication/main_view.dart';
-import 'views/userprofile/change_parameters_view.dart';
-import 'views/userprofile/change_password_view.dart';
-import 'views/userprofile/userprofile_view.dart';
-import 'providers/user_provider.dart';
 class MyApp extends StatelessWidget {
   const MyApp({
-    Key? key,
+    super.key,
     required this.mealList,
     required this.date,
     required this.initialList,
     required this.productsinmeal,
-  }) : super(key: key);
+  });
 
   final List<Meal> mealList;
   final DateTime date;
@@ -41,15 +41,15 @@ class MyApp extends StatelessWidget {
       ),
       color: Colors.amber,
       highContrastTheme: ThemeData.light(),
-      initialRoute: '/mainView',
+      initialRoute: '/mainPageView',
       routes: {
-        '/mainView': (context) => MainView(
+        '/mainPageView': (context) => MainPageView(
                                           initialDate: date, 
                                           mealList: mealList,
                                           userProvider: Provider.of<UserProvider>(context, listen: false)),
-        '/userprofile': (context) => const UserProfileView(),
-        '/changeparameters': (context) => ChangeParametersView(),
-        '/changepassword': (context) => ChangePasswordView(),
+        '/userProfile': (context) => const UserProfileView(),
+        '/changeParameters': (context) => ChangeParametersView(),
+        '/changePassword': (context) => ChangePasswordView(),
       },
     );
   }

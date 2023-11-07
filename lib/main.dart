@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/user_provider.dart';
-import 'data_models/dayentries.dart';
-import 'data_models/meal.dart';
-import 'data_models/productsinmeal.dart';
+import 'business_logic/provider-architecture/user_provider.dart';
+import 'backend/data_models/day_entries.dart';
+import 'backend/data_models/meal.dart';
+import 'backend/data_models/products_in_meal.dart';
 import 'main_app_route.dart';
-import 'views/login_related/forgot_password_view.dart';
-import 'views/login_related/login_view.dart';
-import 'views/login_related/register_view.dart';
-import 'repositories/user_repository.dart';
+import 'frontend/login/views/forgot_password_view.dart';
+import 'frontend/login/view_models/forgot_password_view_model.dart';
+import 'frontend/login/views/login_view.dart';
+import 'frontend/login/views/register_view.dart';
+import 'frontend/login/view_models/register_view_model.dart';
+import 'business_logic/provider-architecture/repositories/user_repository.dart';
 
 void main() {
   runApp(const LoginApp());
 }
 
 class LoginApp extends StatefulWidget {
-  const LoginApp({Key? key}) : super(key: key);
+  const LoginApp({super.key});
 
   @override
   State<LoginApp> createState() => LoginAppState();
@@ -57,11 +59,17 @@ class LoginAppState extends State<LoginApp> {
         initialRoute: '/login',
         routes: {
           '/login': (context) => LoginView(isLoggedCallback: _handleLogin),
-          '/register': (context) => RegisterNowView(),
-          '/forgotpassword': (context) => ForgotPasswordView(),
+          '/register': (context) => ChangeNotifierProvider(
+            create: (context) => RegisterViewModel() ,
+            child: const RegisterView(),
+          ),
+          '/forgotPassword': (context) => ChangeNotifierProvider(
+            create: (context) => ForgotPasswordViewModel(),
+            child: const ForgotPasswordView(),
+          )
         },
         onGenerateRoute: (settings) {
-          if (settings.name == '/mainView') {
+          if (settings.name == '/mainPageView') {
             if (isLogged) {
 
               return MaterialPageRoute(
