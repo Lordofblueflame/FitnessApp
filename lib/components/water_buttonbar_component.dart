@@ -5,17 +5,15 @@ import '../api/day_entries_api.dart';
 import '../data_models/user.dart';
 import 'buttons/add_water_button.dart';
 
-// ignore: must_be_immutable
 class WaterButtonBarComponent extends StatefulWidget {
-  late int water;
+  final int initialWater;
   final int neededWater;
   final DateTime date;
   final User user;
-  final double waterButtonSize = 150.0; // Rozmiar jednego WaterButton
 
-  WaterButtonBarComponent({
+  const WaterButtonBarComponent({
     Key? key,
-    required this.water,
+    required this.initialWater,
     required this.neededWater,
     required this.date,
     required this.user,
@@ -26,44 +24,56 @@ class WaterButtonBarComponent extends StatefulWidget {
 }
 
 class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
-  int waterButtonCount = 0;
+  late int currentWater;
+  late int waterButtonCount;
+  final int waterIncrement = 150;
 
   @override
   void initState() {
     super.initState();
-    updateWaterButtonCount();
+    initializeValues();
   }
 
-  void updateWaterButtonCount() {
-    waterButtonCount = (widget.neededWater / widget.waterButtonSize).ceil();
-    setState(() {});
+  @override
+  void didUpdateWidget(WaterButtonBarComponent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialWater != oldWidget.initialWater) {
+      initializeValues();
+    }
+  }
+
+  void initializeValues() {
+    currentWater = widget.initialWater;
+    waterButtonCount = (widget.neededWater / waterIncrement).ceil();
   }
 
   void handleWaterButtonTap(bool isTapped) async {
-    if (isTapped) {
-      setState(() {
-        widget.water += 150;
-      });
+    int waterChange = isTapped ? waterIncrement : -waterIncrement;
+    int newWaterLevel = (currentWater + waterChange).clamp(0, widget.neededWater);
+
+    setState(() {
+      currentWater = newWaterLevel;
+    });
+
+    try {
       Map<String, dynamic> data = {
         'user_id': widget.user.userId,
         'date': DateFormat('yyyy-MM-dd').format(widget.date),
-        'water': 150,
+        'water': waterChange,
         'workout': 0,
         'product_in_meal': 0,
       };
-      await addNewEntry(data);
-    } else {
+      bool success = await addNewEntry(data);
+      if (!success) {
+        throw Exception('Failed to update water data');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating water data: $e')),
+      );
       setState(() {
-        widget.water -= 150;
+        currentWater -= waterChange;
       });
-        Map<String, dynamic> data = {
-        'user_id': widget.user.userId,
-        'date': DateFormat('yyyy-MM-dd').format(widget.date),
-        'water': -150,
-        'workout': 0,
-        'product_in_meal': 0,
-      };
-      await addNewEntry(data);
     }
   }
 
@@ -99,7 +109,7 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
                       ),
                     ),
                     Text(
-                      '${widget.water} ml / ${widget.neededWater} ml',
+                      '$currentWater ml / ${widget.neededWater} ml',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: Colors.grey.shade700,
@@ -109,11 +119,15 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 2,
-                      children: List.generate(waterButtonCount, (_) => WaterButton(
-                        date: widget.date,
-                        user: widget.user,
-                        onTap: handleWaterButtonTap,
-                      )),
+                      children: List.generate(waterButtonCount, (index) {
+                        bool isButtonActive = (index + 1) * waterIncrement <= currentWater;
+                        return WaterButton(
+                          date: widget.date,
+                          user: widget.user,
+                          isFull: isButtonActive,
+                          onTap: handleWaterButtonTap,
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -125,3 +139,4 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
     );
   }
 }
+

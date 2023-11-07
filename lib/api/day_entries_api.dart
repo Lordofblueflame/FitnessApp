@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'common_api.dart';
 import '../log/debug_helper.dart';
 
-Future<void> addNewEntry(Map<String, dynamic> data) async {
+Future<bool> addNewEntry(Map<String, dynamic> data) async {
   DebugHelper.printFunctionName();
   final Uri url = Uri.parse('$address/dayentries/addnewentry');
 
@@ -15,7 +15,9 @@ Future<void> addNewEntry(Map<String, dynamic> data) async {
   );
 
   if (response.statusCode == 200) {
+    return true;
   } else {
+    return false;
   }
 }
 

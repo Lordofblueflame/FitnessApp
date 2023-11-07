@@ -44,9 +44,9 @@ class LoginAppState extends State<LoginApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => UserProvider(UserRepository()), // Provide UserRepository here
+          create: (context) => UserProvider(UserRepository()),
         ),
-        // Add more providers if needed
+
       ],
       child: MaterialApp(
         theme: ThemeData(
