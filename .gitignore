@@ -144,3 +144,4 @@ windows/runner/win32_window.h
 windows/runner/resources/app_icon.ico
 .vscode/settings.json
 SQLiteDatabase/FitnessAppDatabase.db-journal
+SQLiteDatabase/FitnessAppDatabase_main.db
