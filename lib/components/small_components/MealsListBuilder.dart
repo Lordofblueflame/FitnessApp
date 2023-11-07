@@ -29,19 +29,23 @@ class MealsListBuilder extends StatefulWidget {
 
 class _MealsListBuilderState extends State<MealsListBuilder> {
   late List<int> mealKcal = [0,0,0,0,0];
+  late Future<void> _calculationFuture;
 
   @override
   void initState() {
     super.initState();
-    calculateMealKcals();
+    _calculationFuture = calculateMealKcals();
   }
+
 
   Future<void> calculateMealKcals() async {
     List<int> changes = [];
 
+    final productsinmealCopy = List<ProductsInMeal>.from(widget.productsinmeal);
+
     for (final meal in widget.meals) {
       int totalKcal = 0;
-      for (final productInMeal in widget.productsinmeal) {
+      for (final productInMeal in productsinmealCopy) {
         if (productInMeal.mealId == meal.mealId) {
           final product = await getProductById(productInMeal.productId);
           totalKcal += product.calories;
@@ -49,7 +53,17 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
       }
       changes.add(totalKcal);
     }
+    setState(() {
       mealKcal = changes;
+    });
+  }
+
+  @override
+  void didUpdateWidget(MealsListBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.productsinmeal != oldWidget.productsinmeal) {
+      calculateMealKcals();
+    }
   }
 
   int calcWater() {
@@ -60,7 +74,7 @@ class _MealsListBuilderState extends State<MealsListBuilder> {
   Widget build(BuildContext context) {
 
     return FutureBuilder<void>(
-      future: calculateMealKcals(),
+      future: _calculationFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView.builder(

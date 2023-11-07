@@ -46,8 +46,6 @@ class MyApp extends StatelessWidget {
         '/mainView': (context) => MainView(
                                           initialDate: date, 
                                           mealList: mealList,
-                                          initialList: initialList, 
-                                          productsinmeal:productsinmeal,
                                           userProvider: Provider.of<UserProvider>(context, listen: false)),
         '/userprofile': (context) => const UserProfileView(),
         '/changeparameters': (context) => ChangeParametersView(),
