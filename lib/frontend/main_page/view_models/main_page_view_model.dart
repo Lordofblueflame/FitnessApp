@@ -10,9 +10,9 @@ import '../../../backend/api/products_in_meal_api.dart';
 
 class MainPageViewModel extends ChangeNotifier {
   final UserProvider userProvider;
-  late MacroData _needed;
+  late MacroData _needed = MacroData(kcal: 0, proteins: 0, fats: 0, carbs: 0);
   MacroData _total = MacroData(kcal: 0, proteins: 0, fats: 0, carbs: 0);
-  late double _userBmi;
+  late double _userBmi = 0;
   List<ProductsInMeal> _todayProductsInMeal = [];
   DateTime _selectedDate;
 
@@ -31,9 +31,9 @@ class MainPageViewModel extends ChangeNotifier {
   DateTime get selectedDate => _selectedDate;
 
   void _initializeData() async {
+    await updateData(_selectedDate);
     _userBmi = calculateBMI(userProvider.user!.weight, userProvider.user!.height);
     _needed = calculateNeededMacros(_userBmi);
-    await updateData(_selectedDate);
     notifyListeners();
   }
 
