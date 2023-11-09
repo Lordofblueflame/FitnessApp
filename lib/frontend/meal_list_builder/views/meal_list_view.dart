@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../backend/data_models/meal.dart';
+import 'package:provider/provider.dart';
 import '../view_models/meal_list_view_model.dart';
 import '../widgets/meal_container_component.dart';
 import '../widgets/water_buttonbar_component.dart';
@@ -26,6 +26,13 @@ class _MealsListViewState extends State<MealsListView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var viewModel = Provider.of<MealsListViewModel>(context);
+    _calculationFuture = viewModel.calculateMealKcals(viewModel.productsInMeal);
+  }
+  
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<void>(
       future: _calculationFuture,
@@ -43,12 +50,9 @@ class _MealsListViewState extends State<MealsListView> {
                   user: widget.viewModel.userProvider.user!,
                 );
               }
-              final Meal meal = widget.viewModel.meals[index];
-              final int mealKcalValue = widget.viewModel.mealKcal[index];
-
               return MealContainerComponent(
-                meal: meal,
-                mealKcal: mealKcalValue,
+                meal: widget.viewModel.meals[index],
+                mealKcal: widget.viewModel.mealKcal[index],
                 date: widget.viewModel.date,
                 user: widget.viewModel.userProvider.user!,
                 key: UniqueKey(),

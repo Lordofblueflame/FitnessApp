@@ -72,8 +72,12 @@ void startAnimation() {
     int frame = _animationController!.isCompleted
       ? _glassImages.length - 1
       : _animation!.value.floor() % _glassImages.length;
-    return Positioned.fill(
-      child: _glassImages[frame],
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: _glassImages[frame],
+        ),
+      ],
     );
   }
 }

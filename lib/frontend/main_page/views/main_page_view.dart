@@ -31,6 +31,12 @@ class MainPageView extends StatelessWidget {
       ),
       child: Consumer<MainPageViewModel>(
         builder: (context, viewModel, child) {
+            var mealsListViewModel = MealsListViewModel(
+            meals: mealList,
+            date: viewModel.selectedDate,
+            userProvider: userProvider,
+            productsInMeal: List<ProductsInMeal>.from(viewModel.todayProductsInMeal),
+          );
           return Scaffold(
             backgroundColor: Colors.green[700],
             appBar: AppBar(
@@ -58,12 +64,9 @@ class MainPageView extends StatelessWidget {
             ),
             body: ListView(
               children: [
-                MealsListView( 
-                  viewModel: MealsListViewModel(
-                  meals: mealList,
-                  date: viewModel.selectedDate,
-                  userProvider: userProvider,
-                  productsInMeal: List<ProductsInMeal>.from(viewModel.todayProductsInMeal),
+                ChangeNotifierProvider.value(
+                  value: mealsListViewModel,
+                  child: MealsListView( viewModel: mealsListViewModel,
                   ),
                 ),
               ],

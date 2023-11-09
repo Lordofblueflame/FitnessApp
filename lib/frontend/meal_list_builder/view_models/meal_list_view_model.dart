@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../business_logic/provider-architecture/user_provider.dart';
@@ -6,7 +7,7 @@ import '../../../backend/data_models/day_entries.dart';
 import '../../../backend/api/product_api.dart';
 import '../../../backend/api/day_entries_api.dart';
 
-class MealsListViewModel {
+class MealsListViewModel extends ChangeNotifier {
   final List<Meal> meals;
   final UserProvider userProvider;
   final DateTime date;
