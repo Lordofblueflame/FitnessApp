@@ -92,7 +92,7 @@ Future<List<Product>> searchForProducts(String productName) async {
 Future<void> addNewProduct(String productName, int calories, double protiens, double fats, double carbons) async {
   DebugHelper.printFunctionName();
 
-  const url = '$address/createuser'; // Change the address to your desired endpoint
+  const url = '$address/createuser'; 
   final headers = {'Content-Type': 'application/json'};
   final data = {
     'product_name': productName,

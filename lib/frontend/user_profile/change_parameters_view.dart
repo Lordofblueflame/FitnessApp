@@ -13,7 +13,7 @@ class ChangeParametersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context); // Access the UserProvider instance.
+    final userProvider = Provider.of<UserProvider>(context);
 
     heightController.text = userProvider.user?.height.toString() ?? '';
     weightController.text = userProvider.user?.weight.toString() ?? '';
@@ -43,7 +43,7 @@ class ChangeParametersView extends StatelessWidget {
           UserControlButton(
             onTap: () async {
               bool retval = await userProvider.updateWeightAndHeight(
-                userProvider.user!.userId,
+                userProvider,
                 int.parse(weightController.text),
                 int.parse(heightController.text),
               );

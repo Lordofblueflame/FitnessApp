@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-// rectangle black button - login, register, reset password
-
 class UserControlButton extends StatelessWidget {
 
   final Function()? onTap;

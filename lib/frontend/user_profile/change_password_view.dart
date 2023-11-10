@@ -23,7 +23,7 @@ class ChangePasswordView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/userProfile'); // Powrót do poprzedniego widoku
+            Navigator.pushNamed(context, '/userProfile');
           },       
         )
       ),

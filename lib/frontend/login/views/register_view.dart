@@ -9,7 +9,6 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ViewModel is provided by a Provider widget in the widget tree
     final viewModel = Provider.of<RegisterViewModel>(context);
 
     return Scaffold(
@@ -17,7 +16,7 @@ class RegisterView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/login'); // Return to previous view
+            Navigator.pushNamed(context, '/login');
           },
         ),
       ),
