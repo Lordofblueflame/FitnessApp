@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../view_models/search_products_view_model.dart'; // ViewModel for the business logic
+import '../view_models/search_products_view_model.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/user.dart';
 import '../../../business_logic/delegates/search_products_delegate.dart';

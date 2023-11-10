@@ -2,8 +2,8 @@ class User {
   final int userId;
   final String username;
   final String email;
-  final int weight;
-  final int height;
+  late int weight;
+  late int height;
 
   User({
     required this.userId,

@@ -17,7 +17,7 @@ class ForgotPasswordView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Use pop instead of navigating with a route name for going back.
+            Navigator.pop(context); 
           },
         ),
       ),

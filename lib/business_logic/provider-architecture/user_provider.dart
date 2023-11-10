@@ -16,10 +16,12 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> updateWeightAndHeight(int userId, int weight, int height) async {
+  Future<bool> updateWeightAndHeight(UserProvider userProvider, int weight, int height) async {
     try {
-      final success = await _userRepository.updateUserWeightAndHeight(userId, weight, height);
+      final success = await _userRepository.updateUserWeightAndHeight(userProvider.user!.userId, weight, height);
       if (success) {
+        userProvider.user!.weight = weight;
+        userProvider.user!.height = height;
         notifyListeners();
       }
       return success;

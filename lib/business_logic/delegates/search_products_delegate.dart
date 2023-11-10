@@ -93,10 +93,10 @@ class SearchProductsDelegate extends SearchDelegate {
 
   void _handleProductClick(BuildContext context, Product product) async {
     await viewModel.addProductToMeal(product);
-    // This is where you might want to give feedback to the user, like a confirmation message
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Added ${product.productName} to meal.')),
     );
-    close(context, null); // This will close the search delegate and return to the previous screen
+    close(context, null);
   }
 }

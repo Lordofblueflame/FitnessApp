@@ -30,9 +30,7 @@ login_request_model = api.model('LoginRequestModel', {
 create_user_request_model = api.model('CreateUserRequestModel', {
     'username': fields.String(required=True, description='Username or login'),
     'password': fields.String(required=True, description='User password'),
-    'email': fields.String(required=True, description='Email of the user'),
-    'weight': fields.Integer(required=True, description='Weight of the user'),
-    'height': fields.Integer(required=True, description='Height of the user'),
+    'email': fields.String(required=True, description='Email of the user')
 })
 
 delete_user_request_model = api.model('DeleteUserRequestModel', {
@@ -131,7 +129,7 @@ class UserGetUserInfo(Resource):
         retval = user.get_user_info(data)
         return jsonify(retval) 
 
-@user_ns.route('/update_weight_height')
+@user_ns.route('/updateweightheight')
 class UpdateWeightHeight(Resource):
     @api.doc(description='Update user weight and height')
     @api.expect(update_weight_height_request_model, validate=True)  # Use the update_weight_height_request_model
@@ -150,7 +148,7 @@ class UpdateWeightHeight(Resource):
         else:
             return {'message': 'Database connection error.'}, 500
 
-@user_ns.route('/change_password')
+@user_ns.route('/changepassword')
 class ChangePassword(Resource):
     @api.doc(description='Change user password')
     @api.expect(change_password_request_model, validate=True)  # Use the change_password_request_model
@@ -322,27 +320,3 @@ class GetUserDayEntries(Resource):
     
 if __name__ == '__main__':
     app.run(host = "192.168.0.91", port = '5000')
-
-#curl -X GET -H "Content-Type: application/json" -d "{ \"email\" : \"Cepkamil@gmail.com\" }" http://192.168.0.178:5000/user/recoverpassword
-
-#curl -X GET "http://192.168.0.178:5000/dayentries/getuserdayentries?user_id=7"
-
-#curl -X GET "http://192.168.0.178:5000/user/getuserinfo?login=test&password=test"
-
-#curl -X GET "http://192.168.0.178:5000/dayentries/getdayentries?date=2023-06-30&user_id=123"
-
-#curl -X GET 'http://192.168.0.178:5000/productinmeal/getproductinmealbyid?productinmeal=3'
-
-#curl -X GET "http://192.168.0.178:5000/dayentries/getdayentries?date=2023-06-30&user_id=7"
-
-#curl -X POST -H "Content-Type: application/json" -d "{\"user_id\": 1, \"weight\": 70,\"height\": 180}" http://192.168.0.178:5000/api/update_weight_height
-
-#curl -X POST -H "Content-Type: application/json" -d "{\"user_id\": 1, \"current_password\": \"123456\",\"new_password\": \"180\"}" http://192.168.0.178:5000/api/change_password
-
-#curl -X POST -H "Content-Type: application/json" -d "{\"meal_id\": 1, \"product_id\": 5}" http://192.168.0.178:5000/productinmeal/addproductinmeal
-
-#curl -X GET -H "Content-Type: application/json" -d "{ \"product_name\" : \"m\" }" http://192.168.0.178:5000/product/searchproductbyname
-
-#curl -X POST -H "Content-Type: application/json" -d "{ \"username\" : \"Kamiloso515\" , \"password\" : \"123456\" }" http://127.0.0.1:5000/login
-
-#curl -X POST -H "Content-Type: application/json" -d "{ \"username\" : \"testuser\", \"password\" : \"testpass\", \"email\" : \"test@test.com\"}" http://127.0.0.1:5000/createuser

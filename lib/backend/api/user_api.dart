@@ -5,10 +5,11 @@ import '../data_models/user.dart';
 import 'common_api.dart';
 import '../log/debug_helper.dart';
 
+
 Future<bool> updateWeightAndHeight(int userId, int weight, int height) async {
   DebugHelper.printFunctionName();
 
-  final url = Uri.parse('$address/api/update_weight_height');
+  final url = Uri.parse('$address/user/updateweightheight');
   
   final response = await http.post(
     url,
@@ -19,7 +20,7 @@ Future<bool> updateWeightAndHeight(int userId, int weight, int height) async {
       'height': height,
     }),
   );
-
+  
   if (response.statusCode == 200) {
     return true;
   } else {
@@ -30,7 +31,7 @@ Future<bool> updateWeightAndHeight(int userId, int weight, int height) async {
 Future<bool> changePassword(int userId, String currentPassword, String newPassword) async {
   DebugHelper.printFunctionName();
 
-  final url = Uri.parse('$address/api/change_password');
+  final url = Uri.parse('$address/user/changepassword');
   
   final response = await http.post(
     url,
@@ -93,7 +94,6 @@ Future<void> deleteUser(int id) async {
     final response = await http.post(Uri.parse(url), headers: headers, body: jsonData);
 
     if (response.statusCode == 200) {
-      //final responseData = json.decode(response.body);
     } else {
       if (kDebugMode) {
         print('Error: ${response.statusCode}');

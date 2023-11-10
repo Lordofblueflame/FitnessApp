@@ -1,4 +1,3 @@
-// ViewModel for SearchProductsView: Contains business logic for search operations
 import 'package:intl/intl.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/user.dart';
