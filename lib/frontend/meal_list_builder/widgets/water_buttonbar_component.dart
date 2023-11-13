@@ -1,84 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import '../../../backend/api/day_entries_api.dart';
-import '../../../backend/data_models/user.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/buttons/add_water_button.dart';
+import '../../../business_logic/provider-architecture/water_intake_provider.dart';
 
 class WaterButtonBarComponent extends StatefulWidget {
-  final int initialWater;
-  final int neededWater;
-  final DateTime date;
-  final User user;
-
-  const WaterButtonBarComponent({
-    super.key,
-    required this.initialWater,
-    required this.neededWater,
-    required this.date,
-    required this.user,
-  });
+  const WaterButtonBarComponent({super.key});
 
   @override
   _WaterButtonBarComponentState createState() => _WaterButtonBarComponentState();
 }
 
 class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
-  late int currentWater;
-  late int waterButtonCount;
-  final int waterIncrement = 150;
+  late List<WaterButton> waterButtonList;
+  late List<GlobalKey<WaterButtonState>> buttonKeys;
 
   @override
   void initState() {
     super.initState();
-    initializeValues();
+    buttonKeys = List.generate(Provider.of<WaterIntakeProvider>(context, listen: false).buttonCount, (index) => GlobalKey<WaterButtonState>());
   }
 
-  @override
-  void didUpdateWidget(WaterButtonBarComponent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.initialWater != oldWidget.initialWater) {
-      initializeValues();
-    }
+void handleWaterButtonTap(int tappedIndex) {
+  Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(tappedIndex);
+  int startIndex = waterButtonList.indexWhere((element) => element.isFull);
+
+  if (startIndex == -1) {
+    startIndex = 0;
   }
 
-  void initializeValues() {
-    currentWater = widget.initialWater;
-    waterButtonCount = (widget.neededWater / waterIncrement).ceil();
-  }
-
-  void handleWaterButtonTap(bool isTapped) async {
-    int waterChange = isTapped ? waterIncrement : -waterIncrement;
-    int newWaterLevel = (currentWater + waterChange).clamp(0, widget.neededWater);
-
-    setState(() {
-      currentWater = newWaterLevel;
-    });
-
-    try {
-      Map<String, dynamic> data = {
-        'user_id': widget.user.userId,
-        'date': DateFormat('yyyy-MM-dd').format(widget.date),
-        'water': waterChange,
-        'workout': 0,
-        'product_in_meal': 0,
-      };
-      bool success = await addNewEntry(data);
-      if (!success) {
-        throw Exception('Failed to update water data');
+  if (startIndex > tappedIndex) {
+    for (int i = tappedIndex; i < startIndex; i++) {
+      var currentState = buttonKeys[i].currentState;
+      if (currentState != null && currentState.isFull) {
+        currentState.isFull = false; 
+        currentState.toggleWaterLevel(); 
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating water data: $e')),
-      );
-      setState(() {
-        currentWater -= waterChange;
-      });
     }
+  } else {
+
+    for (int i = startIndex; i <= tappedIndex; i++) {
+      var currentState = buttonKeys[i].currentState;
+      if (currentState != null && !currentState.isFull) {
+        currentState.isFull = true; 
+        currentState.toggleWaterLevel(); 
+      }
+    }
+  }
+  setState(() {  
+  });
+}
+
+ void rebuildWaterButtonList(List<bool> newButtonStates) {
+    waterButtonList = List.generate(newButtonStates.length, (index) {
+      return WaterButton(
+        key: buttonKeys[index], 
+        isFull: newButtonStates[index],
+        onWaterLevelChanged: () => handleWaterButtonTap(index),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var waterModel = Provider.of<WaterIntakeProvider>(context);
+    int currentWater = waterModel.currentWater;
+    int neededWater = waterModel.neededWater;
+    waterButtonList = List.generate(waterModel.buttonCount, (index) {
+      bool isFull = (index + 1) * waterModel.waterIncrement <= currentWater;
+      return WaterButton(
+        key: buttonKeys[index],
+        isFull: isFull,
+        onWaterLevelChanged: () => handleWaterButtonTap(index),
+      );
+    });
     return SizedBox(
       width: 400,
       height: 150,
@@ -109,7 +103,7 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
                       ),
                     ),
                     Text(
-                      '$currentWater ml / ${widget.neededWater} ml',
+                      '$currentWater ml / $neededWater ml',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: Colors.grey.shade700,
@@ -119,15 +113,7 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 2,
-                      children: List.generate(waterButtonCount, (index) {
-                        bool isButtonActive = (index + 1) * waterIncrement <= currentWater;
-                        return WaterButton(
-                          date: widget.date,
-                          user: widget.user,
-                          isFull: isButtonActive,
-                          onTap: handleWaterButtonTap,
-                        );
-                      }),
+                      children: waterButtonList 
                     ),
                   ],
                 ),
@@ -139,4 +125,3 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
     );
   }
 }
-

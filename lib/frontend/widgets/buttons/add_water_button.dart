@@ -1,19 +1,16 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
-import '../../../backend/data_models/user.dart';
 import '../../animations/filling_glass_animation.dart';
 
 class WaterButton extends StatefulWidget {
-  final DateTime date;
-  final User user;
-  final bool isFull; 
-  final Function(bool isTapped) onTap;
+  late bool isFull;
+  final VoidCallback onWaterLevelChanged;
 
-  const WaterButton({
+   WaterButton({
     super.key,
-    required this.date,
-    required this.user,
     this.isFull = false,
-    required this.onTap,
+    required this.onWaterLevelChanged,
   });
 
   @override
@@ -27,26 +24,32 @@ class WaterButtonState extends State<WaterButton> {
   @override
   void initState() {
     super.initState();
-    isFull = widget.isFull; 
+    isFull = widget.isFull;
+    updateAnimationState();
   }
 
   @override
   void didUpdateWidget(WaterButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isFull != isFull) {
+    if (widget.isFull != oldWidget.isFull) {
       isFull = widget.isFull;
-      if (isFull) {
-        _animationKey.currentState?.setToFull();
-      } else {
-        _animationKey.currentState?.setToEmpty();
-      }
+      updateAnimationState();
     }
   }
 
-  void toggleWaterLevel() {
-    _animationKey.currentState?.startAnimation();
+  void updateAnimationState() async {
+    if (isFull) {
+      _animationKey.currentState?.setToFull();
+    } else {
+      _animationKey.currentState?.setToEmpty();
+    }
   }
 
+  Future<void> toggleWaterLevel() async {
+    await _animationKey.currentState?.startAnimation();
+    widget.onWaterLevelChanged(); 
+  }
+  
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -57,12 +60,8 @@ class WaterButtonState extends State<WaterButton> {
         child: FillingGlassAnimation(
           key: _animationKey,
           animationStatusListener: (status) {
-            if (status == AnimationStatus.completed) {
-              setState(() => isFull = true);
-              widget.onTap(true);
-            } else if (status == AnimationStatus.dismissed) {
-              setState(() => isFull = false);
-              widget.onTap(false);
+            if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
+                widget.onWaterLevelChanged();
             }
           },
         ),
