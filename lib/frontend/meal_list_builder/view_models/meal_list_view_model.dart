@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../business_logic/provider-architecture/user_provider.dart';
 import '../../../backend/data_models/products_in_meal.dart';
-import '../../../backend/data_models/day_entries.dart';
 import '../../../backend/api/product_api.dart';
-import '../../../backend/api/day_entries_api.dart';
+
 
 class MealsListViewModel extends ChangeNotifier {
   final List<Meal> meals;
@@ -33,15 +31,5 @@ class MealsListViewModel extends ChangeNotifier {
       }
       mealKcal[i] = totalKcal;
     }
-  }
-
-  int calculateWaterIntake() {
-    return userProvider.user!.weight * 35;
-  }
-
-  Future<List<UserDayEntry>> filterDayEntriesWithWater() async {
-    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    List<UserDayEntry> dayEntries = await getCurrentDayEntries(formattedDate, userProvider.user!.userId);
-    return dayEntries.where((entry) => DateFormat('yyyy-MM-dd').format(date) == formattedDate && entry.water == initialWater).toList();
   }
 }

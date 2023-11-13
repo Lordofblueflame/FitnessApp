@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../view_models/meal_list_view_model.dart';
 import '../widgets/meal_container_component.dart';
 import '../widgets/water_buttonbar_component.dart';
+import '../../../business_logic/provider-architecture/water_intake_provider.dart';
 
 class MealsListView extends StatefulWidget {
   final MealsListViewModel viewModel;
@@ -43,11 +44,9 @@ class _MealsListViewState extends State<MealsListView> {
             itemCount: widget.viewModel.meals.length + 1,
             itemBuilder: (context, index) {
               if (index == widget.viewModel.meals.length) {
-                return WaterButtonBarComponent(
-                  initialWater: widget.viewModel.initialWater,
-                  neededWater: widget.viewModel.calculateWaterIntake(),
-                  date: widget.viewModel.date,
-                  user: widget.viewModel.userProvider.user!,
+                return ChangeNotifierProvider(
+                    create: (context) =>WaterIntakeProvider(widget.viewModel.userProvider, widget.viewModel.date),
+                    child: const WaterButtonBarComponent()
                 );
               }
               return MealContainerComponent(
