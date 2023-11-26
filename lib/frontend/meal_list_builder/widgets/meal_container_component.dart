@@ -3,17 +3,19 @@ import '../../widgets/buttons/add_product_button.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/user.dart';
 import '../../search_products/views/search_products_view.dart';
+import '../../../business_logic/provider-architecture/date_provider.dart';
+
 class MealContainerComponent extends StatefulWidget {
   final Meal meal;
   final int mealKcal;
-  final DateTime date;
+  final DateProvider dateProvider;
   final User user;
 
   const MealContainerComponent({
     super.key,
     required this.meal,
     required this.mealKcal,
-    required this.date,
+    required this.dateProvider,
     required this.user,
   });
 
@@ -66,7 +68,7 @@ class _MealContainerComponentState extends State<MealContainerComponent> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      SearchProductsView(meal: widget.meal, date: widget.date, user: widget.user),
+                      SearchProductsView(meal: widget.meal, dateProvider: widget.dateProvider, user: widget.user),
                 ),
               );
             },

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../backend/api/day_entries_api.dart';
 import '../../../backend/api/meal_api.dart';
@@ -8,6 +7,7 @@ import '../../../backend/data_models/day_entries.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/products_in_meal.dart';
 import '../../../business_logic/provider-architecture/user_provider.dart';
+import '../../../business_logic/provider-architecture/date_provider.dart';
 
 class LoginViewModel {
   final BuildContext context;
@@ -19,14 +19,14 @@ class LoginViewModel {
 
   Future<void> login() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final dateProvider = Provider.of<DateProvider>(context, listen: false);
     bool retval = await userProvider.loginUser(usernameController.text, passwordController.text);
+
     if (retval) {
       List<Meal> mealList = await getMeals();                   
       await userProvider.getUserInfoByUsernameAndPassword(usernameController.text, passwordController.text);
-      
-      String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
 
-      List<UserDayEntry> initialList = await getCurrentDayEntries(currentDate, userProvider.user!.userId);
+      List<UserDayEntry> initialList = await getCurrentDayEntries(dateProvider.getSimpleDate(), userProvider.user!.userId);
       
       List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(initialList); 
       

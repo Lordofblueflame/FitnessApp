@@ -20,42 +20,49 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
     buttonKeys = List.generate(Provider.of<WaterIntakeProvider>(context, listen: false).buttonCount, (index) => GlobalKey<WaterButtonState>());
   }
 
-void handleWaterButtonTap(int tappedIndex) {
-  Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(tappedIndex);
-  int startIndex = waterButtonList.indexWhere((element) => element.isFull);
+  void handleWaterButtonTap(int tappedIndex, bool send) {
+    int startIndex = waterButtonList.indexWhere((element) => element.isFull);
 
-  if (startIndex == -1) {
-    startIndex = 0;
-  }
+    if (startIndex == -1) {
+      startIndex = 0;
+    }
 
-  if (startIndex > tappedIndex) {
-    for (int i = tappedIndex; i < startIndex; i++) {
-      var currentState = buttonKeys[i].currentState;
-      if (currentState != null && currentState.isFull) {
-        currentState.isFull = false; 
-        currentState.toggleWaterLevel(); 
+    if (startIndex > tappedIndex) {
+      for (int i = tappedIndex; i <= startIndex; i++) {
+        var currentState = buttonKeys[i].currentState;
+        if (currentState != null && currentState.isFull) {
+          currentState.isFull = false; 
+          currentState.toggleWaterAnimation(); 
+        }
+      }
+      if(send) {
+        Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(tappedIndex);
+      }
+    } else {
+
+      for (int i = startIndex; i <= tappedIndex; i++) {
+        var currentState = buttonKeys[i].currentState;
+        if (currentState != null && !currentState.isFull) {
+          currentState.isFull = true; 
+          currentState.toggleWaterAnimation(); 
+        }
+        
+      }
+      if(send) {
+        Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(tappedIndex);
       }
     }
-  } else {
 
-    for (int i = startIndex; i <= tappedIndex; i++) {
-      var currentState = buttonKeys[i].currentState;
-      if (currentState != null && !currentState.isFull) {
-        currentState.isFull = true; 
-        currentState.toggleWaterLevel(); 
-      }
-    }
+    setState(() {  
+    });
   }
-  setState(() {  
-  });
-}
 
  void rebuildWaterButtonList(List<bool> newButtonStates) {
     waterButtonList = List.generate(newButtonStates.length, (index) {
       return WaterButton(
         key: buttonKeys[index], 
         isFull: newButtonStates[index],
-        onWaterLevelChanged: () => handleWaterButtonTap(index),
+        onWaterLevelChanged: () => handleWaterButtonTap(index, false),
       );
     });
   }
@@ -70,56 +77,52 @@ void handleWaterButtonTap(int tappedIndex) {
       return WaterButton(
         key: buttonKeys[index],
         isFull: isFull,
-        onWaterLevelChanged: () => handleWaterButtonTap(index),
+        onWaterLevelChanged: () => handleWaterButtonTap(index, true),
       );
     });
-    return SizedBox(
-      width: 400,
-      height: 150,
-      child: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.lightGreen[500],
-            border: Border.all(color: Colors.black),
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.elliptical(25, 10),
-              right: Radius.elliptical(25, 10),
-            ),
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.lightGreen[500],
+          border: Border.all(color: Colors.black),
+          borderRadius: const BorderRadius.horizontal(
+            left: Radius.elliptical(25, 10),
+            right: Radius.elliptical(25, 10),
           ),
-          child: Row(
-            children: [
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 5),
-                    const Text(
-                      'Water',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                      ),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 5),
+                  const Text(
+                    'Water',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
                     ),
-                    Text(
-                      '$currentWater ml / $neededWater ml',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 16,
-                      ),
+                  ),
+                  Text(
+                    '$currentWater ml / $neededWater ml',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 16,
                     ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 2,
-                      children: waterButtonList 
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 2,
+                    children: waterButtonList 
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

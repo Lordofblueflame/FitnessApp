@@ -4,9 +4,17 @@ import 'package:http/http.dart' as http;
 import 'common_api.dart';
 import '../log/debug_helper.dart';
 
-Future<bool> addNewEntry(Map<String, dynamic> data) async {
+Future<bool> addNewEntry(int userId, String simpleDataFormat, int water, int workout, int productInMealId) async {
   DebugHelper.printFunctionName();
   final Uri url = Uri.parse('$address/dayentries/addnewentry');
+
+  Map<String, dynamic> data = {
+    'user_id': userId,
+    'date': simpleDataFormat,
+    'water': water,
+    'workout': workout,
+    'product_in_meal': productInMealId,
+  };
 
   final response = await http.post(
     url,

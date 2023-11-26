@@ -8,24 +8,24 @@ import 'frontend/main_page/views/main_page_view.dart';
 import 'frontend/user_profile/change_parameters_view.dart';
 import 'frontend/user_profile/change_password_view.dart';
 import 'frontend/user_profile/userprofile_view.dart';
+import 'business_logic/provider-architecture/date_provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({
     super.key,
     required this.mealList,
-    required this.date,
+    required this.dateProvider,
     required this.initialList,
     required this.productsinmeal,
   });
 
   final List<Meal> mealList;
-  final DateTime date;
+  final DateProvider dateProvider;
   final List<UserDayEntry> initialList;
   final List<ProductsInMeal> productsinmeal;
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/mainPageView',
       routes: {
         '/mainPageView': (context) => MainPageView(
-                                          initialDate: date, 
                                           mealList: mealList,
                                           userProvider: Provider.of<UserProvider>(context, listen: false)),
         '/userProfile': (context) => const UserProfileView(),

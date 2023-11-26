@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 import '../../../backend/api/day_entries_api.dart';
 import '../../../backend/api/product_api.dart';
 import '../../../backend/data_models/day_entries.dart';
@@ -7,6 +6,7 @@ import '../../../backend/data_models/macro_data.dart';
 import '../../../backend/data_models/products_in_meal.dart';
 import '../../../business_logic/provider-architecture/user_provider.dart';
 import '../../../backend/api/products_in_meal_api.dart';
+import '../../../business_logic/provider-architecture/date_provider.dart';
 
 class MainPageViewModel extends ChangeNotifier {
   final UserProvider userProvider;
@@ -14,12 +14,12 @@ class MainPageViewModel extends ChangeNotifier {
   MacroData _total = MacroData(kcal: 0, proteins: 0, fats: 0, carbs: 0);
   late double _userBmi = 0;
   List<ProductsInMeal> _todayProductsInMeal = [];
-  DateTime _selectedDate;
+  final DateProvider _dateProvider;
 
   MainPageViewModel({
     required this.userProvider,
-    required DateTime selectedDate,
-  }) : _selectedDate = selectedDate {
+    required DateProvider dateProvider,
+  }) : _dateProvider = dateProvider {
     _initializeData();
     notifyListeners();
   }
@@ -28,10 +28,10 @@ class MainPageViewModel extends ChangeNotifier {
   MacroData get total => _total;
   double get userBmi => _userBmi;
   List<ProductsInMeal> get todayProductsInMeal => _todayProductsInMeal;
-  DateTime get selectedDate => _selectedDate;
+  DateProvider get dateProvider => _dateProvider;
 
   void _initializeData() async {
-    await updateData(_selectedDate);
+    await updateData(_dateProvider.date);
     _userBmi = calculateBMI(userProvider.user!.weight, userProvider.user!.height);
     _needed = calculateNeededMacros(_userBmi);
     notifyListeners();
@@ -39,12 +39,15 @@ class MainPageViewModel extends ChangeNotifier {
 
   Future<void> updateData(DateTime date) async {
     try {
-      String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-      List<UserDayEntry> dayEntries = await getCurrentDayEntries(formattedDate, userProvider.user!.userId);
+      _dateProvider.setDate(date);
+      
+      List<UserDayEntry> dayEntries = await getCurrentDayEntries(_dateProvider.getSimpleDate(), userProvider.user!.userId);
       List<ProductsInMeal> productsInMeal = await getProductInMealFromDayEntries(dayEntries);
       MacroData totalFromProducts = await calculateTotalFromProducts(productsInMeal);
+
       _todayProductsInMeal = productsInMeal;
       _total = totalFromProducts;
+
       notifyListeners();
     } catch (e) {
       if (kDebugMode) {
@@ -81,8 +84,8 @@ class MainPageViewModel extends ChangeNotifier {
   }
 
   void handleDateSelected(DateTime date) {
-    _selectedDate = date;
-    updateData(date).then((_) {
+    _dateProvider.setDate(date);
+    updateData(_dateProvider.date).then((_) {
       notifyListeners();
     });
   }

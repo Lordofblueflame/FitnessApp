@@ -9,31 +9,31 @@ import '../../../business_logic/provider-architecture/user_provider.dart';
 import '../view_models/main_page_view_model.dart'; 
 import '../../meal_list_builder/views/meal_list_view.dart';
 import '../../meal_list_builder/view_models/meal_list_view_model.dart';
+import '../../../business_logic/provider-architecture/date_provider.dart';
 
 class MainPageView extends StatelessWidget {
-  final DateTime initialDate;
   final List<Meal> mealList;
   final UserProvider userProvider;
 
   const MainPageView({
     super.key,
-    required this.initialDate,
     required this.mealList,
     required this.userProvider,
   });
 
   @override
   Widget build(BuildContext context) {
+    DateProvider dateProvider = Provider.of<DateProvider>(context, listen: false);
     return ChangeNotifierProvider(
       create: (_) => MainPageViewModel(
         userProvider: userProvider,
-        selectedDate: initialDate,
+        dateProvider: dateProvider,
       ),
       child: Consumer<MainPageViewModel>(
         builder: (context, viewModel, child) {
             var mealsListViewModel = MealsListViewModel(
             meals: mealList,
-            date: viewModel.selectedDate,
+            dateProvider: viewModel.dateProvider,
             userProvider: userProvider,
             productsInMeal: List<ProductsInMeal>.from(viewModel.todayProductsInMeal),
           );
@@ -45,7 +45,7 @@ class MainPageView extends StatelessWidget {
                 preferredSize: const Size.fromHeight(0.0),
                 child: DayButton(
                   restorationId: "1",
-                  initialDate: viewModel.selectedDate,
+                  initialDate: dateProvider.date,
                   onDateSelected: (date) {
                     viewModel.updateData(date);
                   },
