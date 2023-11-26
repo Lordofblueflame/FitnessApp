@@ -44,16 +44,16 @@ class WaterButtonState extends State<WaterButton> {
       _animationKey.currentState?.setToEmpty();
     }
   }
-
-  Future<void> toggleWaterLevel() async {
+  
+  Future<void> toggleWaterAnimation() async {
     await _animationKey.currentState?.startAnimation();
-    widget.onWaterLevelChanged(); 
   }
+
   
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: toggleWaterLevel,
+      onTap: widget.onWaterLevelChanged,
       child: SizedBox(
         width: 37,
         height: 37,

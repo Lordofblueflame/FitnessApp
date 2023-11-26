@@ -45,14 +45,14 @@ class _MealsListViewState extends State<MealsListView> {
             itemBuilder: (context, index) {
               if (index == widget.viewModel.meals.length) {
                 return ChangeNotifierProvider(
-                    create: (context) =>WaterIntakeProvider(widget.viewModel.userProvider, widget.viewModel.date),
+                    create: (context) =>WaterIntakeProvider(widget.viewModel.userProvider, widget.viewModel.dateProvider),
                     child: const WaterButtonBarComponent()
                 );
               }
               return MealContainerComponent(
                 meal: widget.viewModel.meals[index],
                 mealKcal: widget.viewModel.mealKcal[index],
-                date: widget.viewModel.date,
+                dateProvider: widget.viewModel.dateProvider,
                 user: widget.viewModel.userProvider.user!,
                 key: UniqueKey(),
               );

@@ -3,16 +3,17 @@ import '../view_models/search_products_view_model.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/user.dart';
 import '../../../business_logic/delegates/search_products_delegate.dart';
+import '../../../business_logic/provider-architecture/date_provider.dart';
 
 class SearchProductsView extends StatefulWidget {
   final Meal meal;
-  final DateTime date;
+  final DateProvider dateProvider;
   final User user;
 
   const SearchProductsView({
     super.key,
     required this.meal,
-    required this.date,
+    required this.dateProvider,
     required this.user,
   });
 
@@ -28,7 +29,7 @@ class _SearchProductsViewState extends State<SearchProductsView> {
     super.initState();
     viewModel = SearchProductsViewModel(
       meal: widget.meal,
-      date: widget.date,
+      dateProvider: widget.dateProvider,
       user: widget.user,
     );
   }

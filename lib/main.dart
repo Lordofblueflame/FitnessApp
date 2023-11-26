@@ -11,6 +11,7 @@ import 'frontend/login/views/login_view.dart';
 import 'frontend/login/views/register_view.dart';
 import 'frontend/login/view_models/register_view_model.dart';
 import 'business_logic/provider-architecture/repositories/user_repository.dart';
+import 'business_logic/provider-architecture/date_provider.dart';
 
 void main() {
   runApp(const LoginApp());
@@ -41,14 +42,11 @@ class LoginAppState extends State<LoginApp> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime currentDay = DateTime.now();
 
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => UserProvider(UserRepository()),
-        ),
-
+providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider(UserRepository())),
+        ChangeNotifierProvider(create: (_) => DateProvider(DateTime.now())), // Use ChangeNotifierProvider
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -75,7 +73,7 @@ class LoginAppState extends State<LoginApp> {
               return MaterialPageRoute(
                 builder: (context) => MyApp(
                   mealList: mealList,
-                  date: currentDay,
+                  dateProvider: Provider.of<DateProvider>(context, listen: false),
                   initialList: initialList,
                   productsinmeal: productsinmeal,
                 ),
