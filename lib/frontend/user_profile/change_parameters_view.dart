@@ -3,7 +3,7 @@ import '../main_page/widgets/header_widget.dart';
 import '../../frontend/small_components/textfield_with_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; 
-import '../../business_logic/provider-architecture/user_provider.dart';
+import '../../business_logic/provider_architecture/user_provider.dart';
 
 class ChangeParametersView extends StatelessWidget {
   ChangeParametersView({super.key});

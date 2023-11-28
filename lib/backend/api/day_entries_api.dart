@@ -59,3 +59,45 @@ Future<List<UserDayEntry>> getCurrentDayEntries(String date, int userId) async {
     throw Exception('Error fetching entries for a specific day: ${response.statusCode}');
   }
 }
+Future<bool> removeDayEntry(int entryId) async {
+  DebugHelper.printFunctionName();
+  final Uri url = Uri.parse('$address/dayentries/removedayentry?entry_id=$entryId');
+
+  final response = await http.delete(url);
+
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    throw Exception('Error removing day entry: ${response.statusCode}');
+  }
+}
+
+Future<bool> updateDayEntry(int entryId, int newProductInMeal) async {
+  DebugHelper.printFunctionName();
+  final Uri url = Uri.parse('$address/dayentries/updatedayentry?entry_id=$entryId&product_in_meal=$newProductInMeal');
+
+  final response = await http.put(
+    url,
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    throw Exception('Error updating day entry: ${response.statusCode}');
+  }
+}
+
+Future<int> findDayEntry(int userId, String date, int productInMealId) async {
+  DebugHelper.printFunctionName();
+  final Uri url = Uri.parse('$address/dayentries/finddayentry?user_id=$userId&date=$date&product_in_meal=$productInMealId');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final jsonResponse = jsonDecode(response.body);
+    return jsonResponse['entry_id'];
+  } else {
+    throw Exception('Error finding day entry: ${response.statusCode}');
+  }
+}

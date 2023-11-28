@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../business_logic/provider-architecture/user_provider.dart';
+import '../../../business_logic/provider_architecture/user_provider.dart';
 
 class ForgotPasswordViewModel extends ChangeNotifier{
   final emailController = TextEditingController();

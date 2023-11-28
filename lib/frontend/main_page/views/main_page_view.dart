@@ -5,11 +5,11 @@ import '../widgets/header_widget.dart';
 import '../widgets/kcal_footer_widget.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/products_in_meal.dart';
-import '../../../business_logic/provider-architecture/user_provider.dart';
+import '../../../business_logic/provider_architecture/user_provider.dart';
 import '../view_models/main_page_view_model.dart'; 
 import '../../meal_list_builder/views/meal_list_view.dart';
 import '../../meal_list_builder/view_models/meal_list_view_model.dart';
-import '../../../business_logic/provider-architecture/date_provider.dart';
+import '../../../business_logic/provider_architecture/date_provider.dart';
 
 class MainPageView extends StatelessWidget {
   final List<Meal> mealList;

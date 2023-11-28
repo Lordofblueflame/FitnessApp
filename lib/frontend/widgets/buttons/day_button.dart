@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../business_logic/provider-architecture/date_provider.dart';
+import '../../../business_logic/provider_architecture/date_provider.dart';
 
 class DayButton extends StatelessWidget {
   const DayButton({

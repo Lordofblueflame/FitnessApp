@@ -3,12 +3,12 @@ import 'package:provider/provider.dart';
 import 'backend/data_models/day_entries.dart';
 import 'backend/data_models/meal.dart';
 import 'backend/data_models/products_in_meal.dart';
-import 'business_logic/provider-architecture/user_provider.dart';
+import 'business_logic/provider_architecture/user_provider.dart';
 import 'frontend/main_page/views/main_page_view.dart';
 import 'frontend/user_profile/change_parameters_view.dart';
 import 'frontend/user_profile/change_password_view.dart';
 import 'frontend/user_profile/userprofile_view.dart';
-import 'business_logic/provider-architecture/date_provider.dart';
+import 'business_logic/provider_architecture/date_provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({

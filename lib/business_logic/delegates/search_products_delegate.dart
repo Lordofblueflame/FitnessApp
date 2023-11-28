@@ -5,8 +5,8 @@ import '../../frontend/search_products/widgets/product_found_widget.dart';
 
 class SearchProductsDelegate extends SearchDelegate {
   final SearchProductsViewModel viewModel;
-
-  SearchProductsDelegate({required this.viewModel});
+  final Product? productToUpdate; 
+  SearchProductsDelegate({required this.viewModel,this.productToUpdate});
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -92,11 +92,24 @@ class SearchProductsDelegate extends SearchDelegate {
   }
 
   void _handleProductClick(BuildContext context, Product product) async {
+    if(productToUpdate != null)
+    {
+      await viewModel.updateProductInMealChangeDayEntry(productToUpdate!, product);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Updated product ${product.productName} added correctly.')),
+      );
+      close(context, null);
+      return;
+    }
+
     await viewModel.addProductToMeal(product);
-    
+    viewModel.mealContainerViewModel.addProduct(product);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Added ${product.productName} to meal.')),
     );
     close(context, null);
+    return;
   }
 }

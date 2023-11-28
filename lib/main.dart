@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'business_logic/provider-architecture/user_provider.dart';
+import 'business_logic/provider_architecture/user_provider.dart';
 import 'backend/data_models/day_entries.dart';
 import 'backend/data_models/meal.dart';
 import 'backend/data_models/products_in_meal.dart';
@@ -10,8 +10,8 @@ import 'frontend/login/view_models/forgot_password_view_model.dart';
 import 'frontend/login/views/login_view.dart';
 import 'frontend/login/views/register_view.dart';
 import 'frontend/login/view_models/register_view_model.dart';
-import 'business_logic/provider-architecture/repositories/user_repository.dart';
-import 'business_logic/provider-architecture/date_provider.dart';
+import 'business_logic/provider_architecture/repositories/user_repository.dart';
+import 'business_logic/provider_architecture/date_provider.dart';
 
 void main() {
   runApp(const LoginApp());

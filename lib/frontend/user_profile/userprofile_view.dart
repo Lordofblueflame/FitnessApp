@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../frontend/widgets/buttons/user_control_button.dart';
 import '../main_page/widgets/header_widget.dart';
-import '../../business_logic/provider-architecture/user_provider.dart';
+import '../../business_logic/provider_architecture/user_provider.dart';
 
 class UserProfileView extends StatelessWidget {
   const UserProfileView({super.key});

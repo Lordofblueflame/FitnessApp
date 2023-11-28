@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../frontend/widgets/buttons/user_control_button.dart';
 import '../main_page/widgets/header_widget.dart';
 import '../../frontend/small_components/textfield_with_controller.dart';
-import '../../business_logic/provider-architecture/user_provider.dart';
+import '../../business_logic/provider_architecture/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class ChangePasswordView extends StatelessWidget {
