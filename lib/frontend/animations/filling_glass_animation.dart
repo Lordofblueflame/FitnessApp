@@ -39,15 +39,8 @@ class FillingGlassAnimationState extends State<FillingGlassAnimation> with Singl
       });
   }
 
-  @override
-  void dispose() {
-    _animationController?.dispose();
-    super.dispose();
-  }
-
   Future<void> startAnimation() {
     Completer<void> completer = Completer<void>();
-
     if (_animationController!.isCompleted) {
       _animationController!.reverse();
     } else {

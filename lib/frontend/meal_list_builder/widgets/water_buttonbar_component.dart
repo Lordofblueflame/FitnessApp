@@ -20,42 +20,39 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
     buttonKeys = List.generate(Provider.of<WaterIntakeProvider>(context, listen: false).buttonCount, (index) => GlobalKey<WaterButtonState>());
   }
 
-  void handleWaterButtonTap(int tappedIndex, bool send) {
-    int startIndex = waterButtonList.indexWhere((element) => element.isFull);
+void handleWaterButtonTap(int tappedIndex, bool send) {
+  int lastFullIndex = buttonKeys.lastIndexWhere((element) => element.currentState!.isFull);
+  int startIndex, endIndex;
+  int affectedIndexes = 0;
 
-    if (startIndex == -1) {
-      startIndex = 0;
-    }
-
-    if (startIndex > tappedIndex) {
-      for (int i = tappedIndex; i <= startIndex; i++) {
-        var currentState = buttonKeys[i].currentState;
-        if (currentState != null && currentState.isFull) {
-          currentState.isFull = false; 
-          currentState.toggleWaterAnimation(); 
-        }
-      }
-      if(send) {
-        Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(tappedIndex);
-      }
-    } else {
-
-      for (int i = startIndex; i <= tappedIndex; i++) {
-        var currentState = buttonKeys[i].currentState;
-        if (currentState != null && !currentState.isFull) {
-          currentState.isFull = true; 
-          currentState.toggleWaterAnimation(); 
-        }
-        
-      }
-      if(send) {
-        Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(tappedIndex);
-      }
-    }
-
-    setState(() {  
-    });
+  if (tappedIndex <= lastFullIndex) {
+    startIndex = tappedIndex;
+    endIndex = lastFullIndex;
+    affectedIndexes = -(endIndex - startIndex + 1);
+  } 
+  else {
+    startIndex = lastFullIndex ;
+    endIndex = tappedIndex;
+    affectedIndexes = endIndex - startIndex ; 
   }
+
+  if(startIndex == -1) startIndex = 0;
+
+  for (int i = startIndex + 1; i < endIndex; i++) {
+    var currentState = buttonKeys[i].currentState;
+    if (currentState != null) {
+      currentState.isFull = (tappedIndex <= lastFullIndex) ? false : true;
+      currentState.toggleWaterAnimation();
+    }
+  }
+
+  if (send) {
+    Provider.of<WaterIntakeProvider>(context, listen: false).updateWaterIntake(affectedIndexes);
+  }
+
+  setState(() { });
+}
+
 
  void rebuildWaterButtonList(List<bool> newButtonStates) {
     waterButtonList = List.generate(newButtonStates.length, (index) {
@@ -64,6 +61,9 @@ class _WaterButtonBarComponentState extends State<WaterButtonBarComponent> {
         isFull: newButtonStates[index],
         onWaterLevelChanged: () => handleWaterButtonTap(index, false),
       );
+    });
+    setState(() {
+      
     });
   }
 
