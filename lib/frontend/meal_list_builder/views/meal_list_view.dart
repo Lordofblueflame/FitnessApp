@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/meal_list_view_model.dart';
-import '../widgets/meal_container_component.dart';
+import 'meal_container_view.dart';
+import '../view_models/meal_container_view_model.dart';
 import '../widgets/water_buttonbar_component.dart';
-import '../../../business_logic/provider-architecture/water_intake_provider.dart';
+import '../../../business_logic/provider_architecture/water_intake_provider.dart';
 
 class MealsListView extends StatefulWidget {
   final MealsListViewModel viewModel;
@@ -23,14 +24,14 @@ class _MealsListViewState extends State<MealsListView> {
   @override
   void initState() {
     super.initState();
-    _calculationFuture = widget.viewModel.calculateMealKcals(widget.viewModel.productsInMeal);
+    _calculationFuture = widget.viewModel.fetchProductsForView(widget.viewModel.productsInMeal);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     var viewModel = Provider.of<MealsListViewModel>(context);
-    _calculationFuture = viewModel.calculateMealKcals(viewModel.productsInMeal);
+    _calculationFuture = viewModel.fetchProductsForView(viewModel.productsInMeal);
   }
   
   @override
@@ -49,12 +50,20 @@ class _MealsListViewState extends State<MealsListView> {
                     child: const WaterButtonBarComponent()
                 );
               }
-              return MealContainerComponent(
-                meal: widget.viewModel.meals[index],
-                mealKcal: widget.viewModel.mealKcal[index],
-                dateProvider: widget.viewModel.dateProvider,
-                user: widget.viewModel.userProvider.user!,
-                key: UniqueKey(),
+              return ChangeNotifierProvider<MealContainerViewModel>(
+                create: (context) => MealContainerViewModel(
+                  meal: widget.viewModel.meals[index],
+                  mealKcal: widget.viewModel.mealKcal[index],
+                  mealProductPair: widget.viewModel.mealProductPair, 
+                  dateProvider: widget.viewModel.dateProvider, 
+                  userProvider: widget.viewModel.userProvider,
+                ),
+                child: Consumer<MealContainerViewModel>(
+                  builder: (context, viewModel, child) {
+                    return const MealContainerView(
+                    );
+                  },
+                ),
               );
             },
           );

@@ -318,5 +318,47 @@ class GetUserDayEntries(Resource):
         retval = dayentries.get_user_dayentries(user_id)
         return retval
     
+remove_day_entries_parser = reqparse.RequestParser()
+remove_day_entries_parser.add_argument('entry_id', type=int, required=True, help='Entry id') 
+
+@dayentries_ns.route('/removedayentry')
+class RemoveDayEntry(Resource):
+    @dayentries_ns.doc(description="Remove day entry by entry_id")
+    @dayentries_ns.expect(remove_day_entries_parser)
+    def delete(self):
+        entry_id = request.args.get('entry_id')
+        retval = dayentries.remove_day_entry(entry_id)
+        return retval
+    
+update_day_entries_parser = reqparse.RequestParser()
+update_day_entries_parser.add_argument('entry_id', type=int, required=True, help='Entry id') 
+update_day_entries_parser.add_argument('product_in_meal', type=int, required=True, help='new_product_in_meal')
+
+@dayentries_ns.route('/updatedayentry')
+class UpdateDayEntry(Resource):
+    @dayentries_ns.doc(description='Update day entry by entry_id and new_product_in_meal')
+    @dayentries_ns.expect(update_day_entries_parser)
+    def put(self):
+        entry_id = request.args.get('entry_id')
+        new_product_in_meal = request.args.get('product_in_meal')
+        retval = dayentries.update_day_entry(entry_id,new_product_in_meal)
+        return retval
+
+find_day_entry_parser = reqparse.RequestParser()
+find_day_entry_parser.add_argument('user_id', type=int, required=True, help='User id')
+find_day_entry_parser.add_argument('date', type=str, required=True, help='Date') 
+find_day_entry_parser.add_argument('product_in_meal', type=int, required=True, help='product_in_meal')
+
+@dayentries_ns.route('/finddayentry')
+class UpdateDayEntry(Resource):
+    @dayentries_ns.doc(description='Update day entry by entry_id and new_product_in_meal')
+    @dayentries_ns.expect(find_day_entry_parser)
+    def get(self):
+        user_id = request.args.get('user_id')
+        date = request.args.get('date')
+        product_in_meal = request.args.get('product_in_meal')
+        retval = dayentries.find_day_entry(user_id,date,product_in_meal)
+        return retval;
+     
 if __name__ == '__main__':
     app.run(host = "192.168.0.91", port = '5000')

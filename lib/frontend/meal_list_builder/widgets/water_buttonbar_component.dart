@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/buttons/add_water_button.dart';
-import '../../../business_logic/provider-architecture/water_intake_provider.dart';
+import '../../../business_logic/provider_architecture/water_intake_provider.dart';
 
 class WaterButtonBarComponent extends StatefulWidget {
   const WaterButtonBarComponent({super.key});

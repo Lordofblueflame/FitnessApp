@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../widgets/buttons/user_control_button.dart';
 import '../../small_components/textfield_with_controller.dart';
 import '../view_models/forgot_password_view_model.dart';
-import '../../../business_logic/provider-architecture/user_provider.dart';
+import '../../../business_logic/provider_architecture/user_provider.dart';
 
 class ForgotPasswordView extends StatelessWidget {
   const ForgotPasswordView({super.key});
