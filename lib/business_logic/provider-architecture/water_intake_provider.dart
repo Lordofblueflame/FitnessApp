@@ -27,11 +27,19 @@ class WaterIntakeProvider with ChangeNotifier {
     filterWaterOutOfDayEntries();
   }
 
-  Future<void> updateWaterIntake(int tappedIndex) async {
+  Future<void> updateWaterIntake( int affectedIndexes) async {
+    int waterChange = affectedIndexes * waterIncrement;
 
-  currentWater = (tappedIndex + 1) * waterIncrement;
+    currentWater += waterChange;
+
     try {
-      bool success = await addNewEntry(userProvider.user!.userId, dateProvider.getSimpleDate(), currentWater, 0, 0);
+      bool success = await addNewEntry(
+        userProvider.user!.userId,
+        dateProvider.getSimpleDate(),
+        waterChange, 
+        0,
+        0
+      );
 
       if (!success) {
         throw Exception('Failed to update water data');
@@ -39,6 +47,7 @@ class WaterIntakeProvider with ChangeNotifier {
     } catch (e) {
       // Log the error
     }
+
   }
 
   Future<void> filterWaterOutOfDayEntries() async {

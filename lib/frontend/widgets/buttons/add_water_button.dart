@@ -38,18 +38,18 @@ class WaterButtonState extends State<WaterButton> {
   }
 
   void updateAnimationState() async {
-    if (isFull) {
-      _animationKey.currentState?.setToFull();
-    } else {
-      _animationKey.currentState?.setToEmpty();
-    }
-  }
-  
-  Future<void> toggleWaterAnimation() async {
-    await _animationKey.currentState?.startAnimation();
+      if (isFull) {
+        _animationKey.currentState?.setToFull();
+      } else {
+        _animationKey.currentState?.setToEmpty();
+      }         
   }
 
-  
+  void toggleWaterAnimation() {
+    _animationKey.currentState?.startAnimation();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -61,7 +61,7 @@ class WaterButtonState extends State<WaterButton> {
           key: _animationKey,
           animationStatusListener: (status) {
             if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
-                widget.onWaterLevelChanged();
+              widget.onWaterLevelChanged();
             }
           },
         ),
