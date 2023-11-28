@@ -6,8 +6,8 @@ import '../../../backend/api/products_in_meal_api.dart';
 import '../../../backend/data_models/day_entries.dart';
 import '../../../backend/data_models/meal.dart';
 import '../../../backend/data_models/products_in_meal.dart';
-import '../../../business_logic/provider-architecture/user_provider.dart';
-import '../../../business_logic/provider-architecture/date_provider.dart';
+import '../../../business_logic/provider_architecture/user_provider.dart';
+import '../../../business_logic/provider_architecture/date_provider.dart';
 
 class LoginViewModel {
   final BuildContext context;
