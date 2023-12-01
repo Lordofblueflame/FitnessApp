@@ -31,12 +31,13 @@ class MainPageView extends StatelessWidget {
       ),
       child: Consumer<MainPageViewModel>(
         builder: (context, viewModel, child) {
-            var mealsListViewModel = MealsListViewModel(
+          var mealsListViewModel = MealsListViewModel(
             meals: mealList,
             dateProvider: viewModel.dateProvider,
             userProvider: userProvider,
             productsInMeal: List<ProductsInMeal>.from(viewModel.todayProductsInMeal),
           );
+
           return Scaffold(
             backgroundColor: Colors.green[700],
             appBar: AppBar(
@@ -52,22 +53,28 @@ class MainPageView extends StatelessWidget {
                 ),
               ),
             ),
-            bottomSheet: KcalFooterWidget(
-              totalkcal: viewModel.total.kcal,
-              neededkcal: viewModel.needed.kcal,
-              totalprot: viewModel.total.proteins,
-              neededprot: viewModel.needed.proteins,
-              totalfats: viewModel.total.fats,
-              neededfats: viewModel.needed.fats,
-              totalcarbs: viewModel.total.carbs,
-              neededcarbs: viewModel.needed.carbs,
-            ),
-            body: ListView(
+            body: Column(
               children: [
-                ChangeNotifierProvider.value(
-                  value: mealsListViewModel,
-                  child: MealsListView( viewModel: mealsListViewModel,
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.1), // Adjust this value as needed
+                    children: [
+                      ChangeNotifierProvider.value(
+                        value: mealsListViewModel,
+                        child: MealsListView(viewModel: mealsListViewModel),
+                      ),
+                    ],
                   ),
+                ),
+                KcalFooterWidget(
+                  totalkcal: viewModel.total.kcal,
+                  neededkcal: viewModel.needed.kcal,
+                  totalprot: viewModel.total.proteins,
+                  neededprot: viewModel.needed.proteins,
+                  totalfats: viewModel.total.fats,
+                  neededfats: viewModel.needed.fats,
+                  totalcarbs: viewModel.total.carbs,
+                  neededcarbs: viewModel.needed.carbs,
                 ),
               ],
             ),

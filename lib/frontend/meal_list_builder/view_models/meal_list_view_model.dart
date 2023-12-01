@@ -36,6 +36,4 @@ class MealsListViewModel extends ChangeNotifier {
       mealKcal[i] = totalKcal;
     }
   }
-
-
 }
